@@ -14,8 +14,8 @@ class Router {
     }
     protected function _resolve($node, $path, $params){
         $pos = strpos($path, self::SEPARATOR, 1);
-        if (false === $pos && array_key_exists(substr($path, 1), $node))
-            return array($node[substr($path, 1)][self::LEAF], $params);
+        if (false === $pos)
+            return array_key_exists(self::LEAF, $node)?array($node[self::LEAF], $params):array($node[substr($path, 1)][self::LEAF], $params);
         $current_token = substr($path, 1, $pos-1);
         $path = substr($path, $pos);
         foreach($node as $child_token=>$child_node){
@@ -25,7 +25,7 @@ class Router {
         foreach($node as $child_token=>$child_node){
             if ($child_token[0] == self::COLON){
                 $pname = substr($child_token, 1);
-                $pvalue = array_key_exists($pname, $params) ? $params[$pname] : null;
+                $pvalue = array_key_exists($pname, $params) ? $params[$pname] : $current_token;
                 $params[$pname] = $current_token;
                 list($cb, $params) = $this->_resolve($child_node, $path, $params);
                 if (is_callable($cb)) return array($cb, $params);
@@ -58,6 +58,7 @@ class Router {
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
             $this->match_one_path($this->_tree[$m], $path, $cb);
         }
+        return $this;
     }
     public function __call($name, $args){
         if (in_array($name, array('get', 'post', 'put', 'patch', 'delete', 'trace', 'connect', 'options', 'head'))){
@@ -66,12 +67,5 @@ class Router {
         }
     }
 }
-
-
-$r = new Router();
-
-$r->get('/test/:id/aaa', function($id=2, $p=1, $a=1){var_dump($id, $p, $a);});
-var_dump($r);
-var_dump($r->execute('GET', '/test/12/aaa', array('id'=>21, 'aaa'=>'bbb')));
 
 
