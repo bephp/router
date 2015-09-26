@@ -19,10 +19,10 @@ class Router {
     }
     protected function _resolve($node, $path, $params){
         list($leaf, $current_token, $path) = $this->split($path);
-        if ($leaf && array_key_exists(self::LEAF, $node)) 
-            return array($node[self::LEAF], $params);
         if ($leaf && array_key_exists($current_token,  $node)) 
             return array($node[$current_token][self::LEAF], $params);
+        if ($leaf && array_key_exists(self::LEAF, $node)) 
+            return array($node[self::LEAF], $params);
         foreach($node as $child_token=>$child_node){
             if ($child_token == $current_token)
                 return $this->_resolve($child_node, $path, $params);
@@ -45,9 +45,10 @@ class Router {
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
         return $this->_resolve($node, $path, $params);
     }
-    public function execute($method, $path, $params=array()){
-        list($cb, $params) = $this->resolve($method, $path, $params);
-        if (!is_callable($cb)) return array(null, "Could not resolve [$method] $path");
+    public function execute($params=array()){
+        $method = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        list($cb, $params) = $this->resolve($_SERVER['REQUEST_METHOD'], $method, $params);
+        if (!is_callable($cb)) return array(null, "Could not resolve $method");
         //TODO need format params.
         $args = (new ReflectionFunction($cb))->getParameters();
         array_walk($args, function(&$p, $i, $params){
