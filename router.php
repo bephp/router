@@ -5,21 +5,24 @@ class Router {
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
-    protected function match_one_path(&$node, $path, $cb){
+    protected function split($path){
         $pos = strpos($path, self::SEPARATOR, 1);
-        if (false === $pos) return $node[substr($path, 1)] = array(self::LEAF=>$cb);
-        $token = substr($path, 1, $pos-1);
+        return array(($leaf = false === $pos),
+            $leaf ? substr($path, 1) : substr($path, 1, $pos-1),
+            $leaf ? '' : substr($path, $pos));
+    }
+    protected function match_one_path(&$node, $path, $cb){
+        list($leaf, $token, $path) = $this->split($path);
+        if ($leaf) return $node[$token] = array(self::LEAF=>$cb);
         if (!array_key_exists($token, $node)) $node[$token] = array();
-        $this->match_one_path($node[$token], substr($path, $pos), $cb);
+        $this->match_one_path($node[$token], $path, $cb);
     }
     protected function _resolve($node, $path, $params){
-        $pos = strpos($path, self::SEPARATOR, 1);
-        if (false === $pos && array_key_exists(self::LEAF, $node)) 
+        list($leaf, $current_token, $path) = $this->split($path);
+        if ($leaf && array_key_exists(self::LEAF, $node)) 
             return array($node[self::LEAF], $params);
-        if (false === $pos && array_key_exists(substr($path, 1), $node)) 
-            return array($node[substr($path, 1)][self::LEAF], $params);
-        $current_token = substr($path, 1, $pos-1);
-        $path = substr($path, $pos);
+        if ($leaf && array_key_exists($current_token,  $node)) 
+            return array($node[$current_token][self::LEAF], $params);
         foreach($node as $child_token=>$child_node){
             if ($child_token == $current_token)
                 return $this->_resolve($child_node, $path, $params);
@@ -28,9 +31,8 @@ class Router {
             if ($child_token[0] == self::COLON){
                 $pname = substr($child_token, 1);
                 $pvalue = array_key_exists($pname, $params) ? $params[$pname] : null;
-                $params[$pname] = substr($path, 1); //$current_token;
-                if (false === $pos)
-                    return array($child_node[self::LEAF], $params);
+                $params[$pname] = $current_token;
+                if ($leaf) return array($child_node[self::LEAF], $params);
                 list($cb, $params) = $this->_resolve($child_node, $path, $params);
                 if (is_callable($cb)) return array($cb, $params);
                 $params[$pname] = $pvalue;
@@ -40,21 +42,20 @@ class Router {
     }
     public function resolve($method, $path, $params){
         $node = $this->_tree[$method];
-        if (!array_key_exists($method, $this->_tree)) return array(null, 'Unknown method: '. $method);
+        if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
         return $this->_resolve($node, $path, $params);
     }
-    public function execute($method, $path, $params){
+    public function execute($method, $path, $params=array()){
         list($cb, $params) = $this->resolve($method, $path, $params);
-        if (!is_callable($cb)) return array(null, 'Could not resolve ['. $method. '] '. $path);
-        // need format params.
+        if (!is_callable($cb)) return array(null, "Could not resolve [$method] $path");
+        //TODO need format params.
         $args = (new ReflectionFunction($cb))->getParameters();
         array_walk($args, function(&$p, $i, $params){
             $p = array_key_exists($p->getName(), $params)?$params[$p->getName()]
-                :(array_key_exists($p->getName(), $_POST)?$_POST[$p->getName()]
-                :(array_key_exists($p->getName(), $_GET)?$_GET[$p->getName()]
-                :($p->isOptional()?$p->getDefaultValue():null)));
+                :(array_key_exists($p->getName(), $_REQUEST)?$_REQUEST[$p->getName()]
+                :($p->isOptional()?$p->getDefaultValue():null));
         }, $params);
-        return array(true, call_user_func_array($cb, $args));
+        return array(true, call_user_func_array($cb, array_map('rawurldecode', $args)));
     }
     public function match($method, $path, $cb){
         if (!is_array($method)) $method = array($method=>array($path=>$cb));
