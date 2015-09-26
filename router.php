@@ -14,8 +14,10 @@ class Router {
     }
     protected function _resolve($node, $path, $params){
         $pos = strpos($path, self::SEPARATOR, 1);
-        if (false === $pos)
-            return array_key_exists(self::LEAF, $node)?array($node[self::LEAF], $params):array($node[substr($path, 1)][self::LEAF], $params);
+        if (false === $pos && array_key_exists(self::LEAF, $node)) 
+            return array($node[self::LEAF], $params);
+        if (false === $pos && array_key_exists(substr($path, 1), $node)) 
+            return array($node[substr($path, 1)][self::LEAF], $params);
         $current_token = substr($path, 1, $pos-1);
         $path = substr($path, $pos);
         foreach($node as $child_token=>$child_node){
@@ -25,8 +27,10 @@ class Router {
         foreach($node as $child_token=>$child_node){
             if ($child_token[0] == self::COLON){
                 $pname = substr($child_token, 1);
-                $pvalue = array_key_exists($pname, $params) ? $params[$pname] : $current_token;
-                $params[$pname] = $current_token;
+                $pvalue = array_key_exists($pname, $params) ? $params[$pname] : null;
+                $params[$pname] = substr($path, 1); //$current_token;
+                if (false === $pos)
+                    return array($child_node[self::LEAF], $params);
                 list($cb, $params) = $this->_resolve($child_node, $path, $params);
                 if (is_callable($cb)) return array($cb, $params);
                 $params[$pname] = $pvalue;
