@@ -2,7 +2,7 @@
     "name": "lloydzhou/router",
     "type": "library",
     "description": "A barebones router for PHP. It matches urls and executes PHP functions.",
-    "keywords": ["router"],
+    "keywords": ["router", "micro", "library"],
     "homepage": "https://github.com/lloydzhou/router",
     "license": "MIT",
     "require": {
