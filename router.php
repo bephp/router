@@ -2,6 +2,7 @@
 
 class Router {
     protected $_tree = array();
+    protected $_err = array();
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
@@ -45,17 +46,21 @@ class Router {
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
         return $this->_resolve($node, $path, $params);
     }
-    public function execute($params=array()){
-        $method = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        list($cb, $params) = $this->resolve($_SERVER['REQUEST_METHOD'], $method, $params);
-        if (!is_callable($cb)) return array(null, "Could not resolve $method");
+    public function execute($params=array(), $method=null, $path=null){
+        $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
+        $path = $path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $params['router'] = $this;
+        list($cb, $params) = $this->resolve($method, $path, $params);
+        if (!is_callable($cb)) return array(null, $this->error(405, "Could not resolve [$method] $path"));
         //TODO need format params.
         $args = (new ReflectionFunction($cb))->getParameters();
         array_walk($args, function(&$p, $i, $params){
             $p = array_key_exists($p->getName(), $params)?$params[$p->getName()]
                 :($p->isOptional()?$p->getDefaultValue():null);
-        }, array_merge($_SERVER, $params, $_REQUEST, $_COOKIE, $_SESSION));
-        return array(true, call_user_func_array($cb, array_map('rawurldecode', $args)));
+        }, array_merge($params, $_SERVER, $_REQUEST, $_COOKIE, isset($_SESSION)?$_SESSION:array()));
+        return array(true, call_user_func_array($cb, array_map(function($v){
+            return is_string($v)?rawurldecode($v):$v;
+        }, $args)));
     }
     public function match($method, $path, $cb){
         if (!is_array($method)) $method = array($method=>array($path=>$cb));
@@ -70,6 +75,14 @@ class Router {
             array_unshift($args, strtoupper($name));
             return call_user_method_array('match', $this, $args);
         }
+    }
+    public function error(){
+        $argv = func_get_args();
+        if (func_num_args()>1 && is_callable($argv[1]))
+            $this->_err[$argv[0]] = $argv[1];
+        elseif(isset($this->_err[$argv[0]]) && is_callable($this->_err[$argv[0]]))
+            call_user_func_array($this->_err[$argv[0]], array_slice($argv, 1));
+        return $this;
     }
 }
 
