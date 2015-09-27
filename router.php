@@ -53,9 +53,8 @@ class Router {
         $args = (new ReflectionFunction($cb))->getParameters();
         array_walk($args, function(&$p, $i, $params){
             $p = array_key_exists($p->getName(), $params)?$params[$p->getName()]
-                :(array_key_exists($p->getName(), $_REQUEST)?$_REQUEST[$p->getName()]
-                :($p->isOptional()?$p->getDefaultValue():null));
-        }, $params);
+                :($p->isOptional()?$p->getDefaultValue():null);
+        }, array_merge($_SERVER, $params, $_REQUEST, $_COOKIE, $_SESSION));
         return array(true, call_user_func_array($cb, array_map('rawurldecode', $args)));
     }
     public function match($method, $path, $cb){
@@ -73,5 +72,4 @@ class Router {
         }
     }
 }
-
 
