@@ -48,7 +48,7 @@ class Router {
     }
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
-        $path = $path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $path = rtrim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
         $params['router'] = $this;
         list($cb, $params) = $this->resolve($method, $path, $params);
         if (!is_callable($cb)) return array(null, $this->error(405, "Could not resolve [$method] $path"));
