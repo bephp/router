@@ -1,5 +1,9 @@
 <?php 
-
+/**
+ * @author Lloyd Zhou (lloydzhou@qq.com)
+ * A barebones router for PHP. It matches urls and executes PHP functions.
+ * automatic get variable based on handler function parameter list.
+ */
 class Router {
     protected $_tree = array();
     protected $_err = array();
@@ -7,27 +11,23 @@ class Router {
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
     protected function split($path){
-        $pos = strpos($path, self::SEPARATOR, 1);
-        $token = ($leaf = false === $pos) ? substr($path, 1) : substr($path, 1, $pos-1);
-        return array($leaf, $token ? $token : self::SEPARATOR, $leaf ? '' : substr($path, $pos));
+        return strlen($path) > 0 && preg_match("@([^/.]+)(.*)@", $path, $m) ? array(false, $m[1], $m[2]) : array(true, '', '');
     }
+    // helper function to create the tree based on urls, handlers will stored to leaf.
     protected function match_one_path(&$node, $path, $cb){
         list($leaf, $token, $path) = $this->split($path);
-        if ($leaf) return $node[$token] = array(self::LEAF=>$cb);
+        if ($leaf) return $token ? $node[$token] = array(self::LEAF=>$cb) : $node[self::LEAF] = $cb;
         if (!array_key_exists($token, $node)) $node[$token] = array();
         $this->match_one_path($node[$token], $path, $cb);
     }
+    // helper function to find handler by $path.
     protected function _resolve($node, $path, $params){
         list($leaf, $current_token, $path) = $this->split($path);
-        if ($leaf && array_key_exists($current_token,  $node)) 
-            return array($node[$current_token][self::LEAF], $params);
         if ($leaf && array_key_exists(self::LEAF, $node)) 
             return array($node[self::LEAF], $params);
         foreach($node as $child_token=>$child_node){
             if ($child_token == $current_token)
                 return $this->_resolve($child_node, $path, $params);
-        }
-        foreach($node as $child_token=>$child_node){
             if ($child_token[0] == self::COLON){
                 $pname = substr($child_token, 1);
                 $pvalue = array_key_exists($pname, $params) ? $params[$pname] : null;
@@ -45,6 +45,7 @@ class Router {
         if (strlen($path) == 0 || !array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
         return $this->_resolve($node, $path, $params);
     }
+    // API to find handler and execute it by parameters.
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
         $path = self::SEPARATOR. trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
@@ -69,12 +70,14 @@ class Router {
         }
         return $this;
     }
+    // register api based on request method.
     public function __call($name, $args){
         if (in_array($name, array('get', 'post', 'put', 'patch', 'delete', 'trace', 'connect', 'options', 'head'))){
             array_unshift($args, strtoupper($name));
             return call_user_method_array('match', $this, $args);
         }
     }
+    // error API, to define error callback or trigger the error.
     public function error(){
         $argv = func_get_args();
         if (func_num_args()>1 && is_callable($argv[1]))

@@ -11,6 +11,9 @@ require ('router.php');
 ->get('/hello/:name', function($name){
     echo "Hello $name !!!";
 })
+->get('/hello/:name/again', function($name){
+    echo "Hello $name again !!!";
+})
 ->execute();
 
 
