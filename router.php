@@ -8,9 +8,8 @@ class Router {
     const LEAF = 'LEAF';
     protected function split($path){
         $pos = strpos($path, self::SEPARATOR, 1);
-        return array(($leaf = false === $pos),
-            $leaf ? substr($path, 1) : substr($path, 1, $pos-1),
-            $leaf ? '' : substr($path, $pos));
+        $token = ($leaf = false === $pos) ? substr($path, 1) : substr($path, 1, $pos-1);
+        return array($leaf, $token ? $token : self::SEPARATOR, $leaf ? '' : substr($path, $pos));
     }
     protected function match_one_path(&$node, $path, $cb){
         list($leaf, $token, $path) = $this->split($path);
@@ -43,12 +42,12 @@ class Router {
     }
     public function resolve($method, $path, $params){
         $node = $this->_tree[$method];
-        if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
+        if (strlen($path) == 0 || !array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
         return $this->_resolve($node, $path, $params);
     }
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
-        $path = rtrim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
+        $path = self::SEPARATOR. trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
         $params['router'] = $this;
         list($cb, $params) = $this->resolve($method, $path, $params);
         if (!is_callable($cb)) return array(null, $this->error(405, "Could not resolve [$method] $path"));

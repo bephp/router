@@ -5,6 +5,9 @@ require ('router.php');
 ->error(405, function($message){
     header('Location: /hello/world', true, 302);
 })
+->get('/', function(){
+    echo "Hello world !!!";
+})
 ->get('/hello/:name', function($name){
     echo "Hello $name !!!";
 })
