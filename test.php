@@ -17,7 +17,7 @@ require ('router.php');
         return $params;
     $params['router']->error(401, 'Forbiden');
 })
-->hook('after', function($result){
+->hook('after', function($result, $router){
     //var_dump($result);
 })
 ->hook('before', function($params){

@@ -80,7 +80,7 @@ class Router {
             $p = isset($params[$p->getName()]) ? $params[$p->getName()] : ($p->isOptional() ? $p->getDefaultValue() : null);
         }, $params);
         /* execute the callback handler and pass the result into "after" hook handler.*/
-        return $this->hook('after', call_user_func_array($cb, $args));
+        return $this->hook('after', call_user_func_array($cb, $args), $this);
     }
     public function match($method, $path, $cb, $hook=array()){
         if (!is_array($method)) $method = array($method=>array($path=>$cb));
