@@ -6,7 +6,8 @@
  */
 class Router {
     protected $_tree = array();
-    protected $_err = array();
+    protected $_error = array();
+    protected $_hook = array();
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
@@ -62,7 +63,7 @@ class Router {
             return is_string($v)?rawurldecode($v):$v;
         }, $args)));
     }
-    public function match($method, $path, $cb){
+    public function match($method, $path, $cb, $hooks=array()){
         if (!is_array($method)) $method = array($method=>array($path=>$cb));
         foreach($method as $m=>$routes){
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
@@ -76,15 +77,14 @@ class Router {
             array_unshift($args, strtoupper($name));
             return call_user_method_array('match', $this, $args);
         }
-    }
-    // error API, to define error callback or trigger the error.
-    public function error(){
-        $argv = func_get_args();
-        if (func_num_args()>1 && is_callable($argv[1]))
-            $this->_err[$argv[0]] = $argv[1];
-        elseif(isset($this->_err[$argv[0]]) && is_callable($this->_err[$argv[0]]))
-            call_user_func_array($this->_err[$argv[0]], array_slice($argv, 1));
-        return $this;
+        if (in_array($name, array('error', 'hook'))){
+            $_name = '_'. $name;
+            if (isset($args[1]) && is_callable($args[1]))
+                $this->{$_name}[$args[0]] = $args[1];
+            elseif (isset($this->{$_name}[$args[0]]) && is_callable($this->{$_name}[$args[0]]))
+                call_user_func_array($this->{$_name}[$args[0]], array_slice($args, 1));
+            return $this;
+        }
     }
 }
 
