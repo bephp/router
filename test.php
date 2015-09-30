@@ -35,4 +35,18 @@ require ('router.php');
 }, 'auth')
 ->execute();
 
+/**
+ * curl -vvv 127.0.0.1:8888/hello/
+ * will trigger 405 error handler, should redirect to URL: "/hello/world"
+ *
+ * curl -vvv 127.0.0.1:8888/hello/lloyd 
+ * will get 200 status code, and get body "Hello lloyd !!!"
+ *
+ * curl -vvv 127.0.0.1:8888/hello/lloyd/again 
+ * will get 200 status code, and get body "Hello lloyd again !!!"
+ *
+ * curl -vvv 127.0.0.1:8888/hello/world/again 
+ * will trigger 406 error handler, should redirect to URL: "/login"
+ *
+ */
 
