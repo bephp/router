@@ -34,6 +34,10 @@ can pass $method and $path when not deploy as web server, can using the 2 parame
 4. the "after" hook will auto trigger with the return value of callback handler.
 5. the "before" hook, and other user define hooks will auto trigger with the merged $params. these hooks need return the $params, so can change the value of $params (like format it). if these hook return false, will trigger 406 error handler.
 
+## Performance
+
+using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n).
+
 ## Example
 
 belong is one simple example, see the full examples in [test.php](https://github.com/lloydzhou/router/blob/master/test.php).
