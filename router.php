@@ -66,7 +66,7 @@ class Router {
          * need define the hook with @param $params, and @return $params, so can change it in the hook handler.
          * if the hook return false, will trigger 406 error handler.
          */
-        $params = array_merge($params, array('router'=>$this), $_SERVER, $_REQUEST, $_COOKIE, isset($_SESSION)?$_SESSION:array());
+        $params = array_merge($params, array('router'=>$this), $_SERVER, $_REQUEST, $_FILES, $_COOKIE, isset($_SESSION)?$_SESSION:array());
         foreach(array_merge(array('before'), $hook) as $i=>$h){
             if (!($params = $this->hook($h, $params))) return $this->error(406, "Failed to execute hook: $h");
         }
