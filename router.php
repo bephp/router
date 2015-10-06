@@ -12,27 +12,24 @@ class Router {
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
     const HOOK = 'HOOK';
-    protected function split($path){
-        return strlen($path) > 0 && preg_match("@([^/.]+)(.*)@", $path, $m) ? array(false, $m[1], $m[2]) : array(true, '', '');
-    }
     /* helper function to create the tree based on urls, handlers will stored to leaf. */
-    protected function match_one_path(&$node, $path, $cb, $hook){
-        list($leaf, $token, $path) = $this->split($path);
+    protected function match_one_path(&$node, $tokens, $cb, $hook){
+        $token = array_shift($tokens);
         if ($token && !array_key_exists($token, $node))
             $node[$token] = array();
-        if (!$leaf) 
-            return $this->match_one_path($node[$token], $path, $cb, $hook);
+        if ($token)
+            return $this->match_one_path($node[$token], $tokens, $cb, $hook);
         $node[self::LEAF] = $cb;
         $node[self::HOOK] = (array)($hook);
     }
     /* helper function to find handler by $path. */
-    protected function _resolve($node, $path, $params){
-        list($leaf, $current_token, $path) = $this->split($path);
-        if ($leaf && array_key_exists(self::LEAF, $node)) 
+    protected function _resolve($node, $tokens, $params){
+        $current_token = array_shift($tokens);
+        if (!$current_token && array_key_exists(self::LEAF, $node)) 
             return array($node[self::LEAF], $params, $node[self::HOOK]);
         foreach($node as $child_token=>$child_node){
             if ($child_token == $current_token)
-                return $this->_resolve($child_node, $path, $params);
+                return $this->_resolve($child_node, $tokens, $params);
             /**
              * if $current_token not null, and $child_token start with ":"
              * set the parameter named $pname and resolve next $path.
@@ -42,8 +39,8 @@ class Router {
                 $pname = substr($child_token, 1);
                 $pvalue = array_key_exists($pname, $params) ? $params[$pname] : null;
                 $params[$pname] = $current_token;
-                if ($leaf) return array($child_node[self::LEAF], $params);
-                list($cb, $params, $hook) = $this->_resolve($child_node, $path, $params);
+                if (!$current_token) return array($child_node[self::LEAF], $params);
+                list($cb, $params, $hook) = $this->_resolve($child_node, $tokens, $params);
                 if (is_callable($cb)) return array($cb, $params, $hook);
                 $params[$pname] = $pvalue;
             }
@@ -52,12 +49,13 @@ class Router {
     }
     public function resolve($method, $path, $params){
         if (strlen($path) == 0 || !array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
-        return $this->_resolve($this->_tree[$method], $path, $params);
+        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
+        return $this->_resolve($this->_tree[$method], $tokens, $params);
     }
     /* API to find handler and execute it by parameters. */
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
-        $path = self::SEPARATOR. trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
+        $path = trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
         list($cb, $params, $hook) = $this->resolve($method, $path, $params);
         if (!is_callable($cb)) return array(null, $this->error(405, "Could not resolve [$method] $path"));
         /**
@@ -84,9 +82,10 @@ class Router {
     }
     public function match($method, $path, $cb, $hook=array()){
         if (!is_array($method)) $method = array($method=>array($path=>$cb));
+        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
         foreach($method as $m=>$routes){
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
-            $this->match_one_path($this->_tree[$m], $path, $cb, $hook);
+            $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
         }
         return $this;
     }
