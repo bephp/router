@@ -20,7 +20,7 @@ require ('router.php');
 ->hook('after', function($result, $router){
     if ($result) {
         header('Content-type: application/'. ($_GET['jsoncallback']?'javascript':'json'));
-        if ($_GET['jsoncallback'])
+        if (isset($_GET['jsoncallback']))
             print $_GET['jsoncallback']. '('. json_encode($result). ')';
         else print json_encode($result);
     }
