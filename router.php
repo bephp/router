@@ -48,7 +48,7 @@ class Router {
         return array(false, '', null);
     }
     public function resolve($method, $path, $params){
-        if (strlen($path) == 0 || !array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method");
+        if (strlen($path) == 0 || !array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
         $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
         return $this->_resolve($this->_tree[$method], $tokens, $params);
     }
@@ -73,7 +73,8 @@ class Router {
          * if the named parameter set in user defined $params or in request, get the value.
          * if the named parameter not set, get the default value in callback handler.
          */
-        $args = (new ReflectionFunction($cb))->getParameters();
+        $ref = is_array($cb) && isset($cb[1]) ? new ReflectionMethod($cb[0], $cb[1]) : new ReflectionFunction($cb);
+        $args = $ref->getParameters();
         array_walk($args, function(&$p, $i, $params){
             $p = isset($params[$p->getName()]) ? $params[$p->getName()] : ($p->isOptional() ? $p->getDefaultValue() : null);
         }, $params);

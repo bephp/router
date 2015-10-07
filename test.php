@@ -1,6 +1,15 @@
 <?php 
 require ('router.php');
 
+class Handler{
+    public function hello($name){
+        echo "Hello $name !!!";
+    }
+    public static function hello_again($name){
+        echo "Hello $name again !!!";
+    }
+}
+
 (new Router())
 ->error(401, function($message){
     header('Location: /login', true, 302);
@@ -32,12 +41,8 @@ require ('router.php');
 ->get('/', function(){
     echo "Hello world !!!";
 })
-->get('/hello/:name', function($name){
-    echo "Hello $name !!!";
-})
-->get('/hello/:name/again', function($name){
-    echo "Hello $name again !!!";
-}, 'auth')
+->get('/hello/:name', array(new Handler(), 'hello'))
+->get('/hello/:name/again', array('Handler', 'hello_again'), 'auth')
 ->get('/hello/:name.:ext', function($name, $ext){
     if ('js' == $ext || 'json' == $ext) return array('name'=>$name);
     return array('code'=>1, 'msg'=>'error message...');
