@@ -48,7 +48,7 @@ class Router {
         return array(false, '', null);
     }
     public function resolve($method, $path, $params){
-        if (strlen($path) == 0 || !array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
+        if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
         $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
         return $this->_resolve($this->_tree[$method], $tokens, $params);
     }
