@@ -105,8 +105,9 @@ class Router {
             $key = array_shift($args);
             if (($_name = '_'. $name) && isset($args[0]) && is_callable($args[0]))
                 $this->{$_name}[$key] = $args[0];
-            elseif (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
+            else if (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
                 return call_user_func_array($this->{$_name}[$key], $args);
+            else return $args[0];
             return $this;
         }
     }
