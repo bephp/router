@@ -34,9 +34,22 @@ can pass $method and $path when not deploy as web server, can using the 2 parame
 4. the "after" hook will auto trigger with the return value of callback handler.
 5. the "before" hook, and other user define hooks will auto trigger with the merged $params. these hooks need return the $params, so can change the value of $params (like format it). if these hook return false, will trigger 406 error handler.
 
+## Compile
+
+the PHP request always match the callback handlers every time. but the request just match one callback.
+so we can compile the routed tree node into plain array, to save time.
+1. in DEV model, using CRouter instead of Router, will always compile the source code into target file.
+    $crouter = new CRouter("router.inc.php", true);
+
+2. in PRODUCTION model, just include the target source code, and execute it with parameters.
+
+    $router = include("router.inc.php");
+    $router->execute();
+
 ## Performance
 
-using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n).
+1. using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n).
+2. using CRouter class, suport to compile router callback handlers into plain array source code. so can save time to create tree node to store callback by split pathinfo.
 
 ## Example
 
