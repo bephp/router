@@ -12,6 +12,11 @@ class Router {
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
     const HOOK = 'HOOK';
+    public function __construct($tree=array(), $error=array(), $hook=array()){
+        $this->_tree = $tree;
+        $this->_error = $error;
+        $this->_hook = $hook;
+    }
     /* helper function to create the tree based on urls, handlers will stored to leaf. */
     protected function match_one_path(&$node, $tokens, $cb, $hook){
         $token = array_shift($tokens);
