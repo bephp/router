@@ -1,5 +1,5 @@
 <?php 
-require ('router.php');
+require ('crouter.php');
 
 class Handler{
     public function hello($name){
@@ -9,8 +9,23 @@ class Handler{
         echo "Hello $name again !!!";
     }
 }
+// product
+//$router = include("router.inc.php");
+//$router->execute();
 
-(new Router())
+/**
+ * using CRouter to compile callback handlers in plan array.
+ * no need to create the tree node by split the pathinfo.
+ * will compile the router to source code into "router.inc.php".
+ *
+ * in product model, just need include the compiled source.
+ * <pre>
+ *     $router = include("router.inc.php");
+ *     $router->execute();
+ * </pre>
+ */
+// dev
+(new CRouter('router.inc.php', true))
 ->error(401, function($message){
     header('Location: /login', true, 302);
     die($message);
