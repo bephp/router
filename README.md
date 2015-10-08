@@ -1,8 +1,8 @@
 # router
-*A barebones router for PHP.*
-*It matches urls and executes PHP functions.*
-*Automatic get variable based on handler function parameter list.*
-*Suport to compile router callback handlers into plain array source code.*
+*A barebones router for PHP.*  
+*It matches urls and executes PHP functions.*  
+*Automatic get variable based on handler function parameter list.*  
+*Suport to compile router callback handlers into plain array source code.*  
 
 ## Installation
 
@@ -42,11 +42,13 @@ can pass $method and $path when not deploy as web server, can using the 2 parame
 the PHP request always match the callback handlers every time. but the request just match one callback.
 so we can compile the routed tree node into plain array, to save time.
 
-1. in DEV model, using CRouter instead of Router, will always compile the source code into target file.
+### DEV model
+using CRouter instead of Router, will always compile the source code into target file.
 
     $crouter = new CRouter("router.inc.php", true);
 
-2. in PRODUCTION model, just include the target source code, and execute it with parameters.
+### PRODUCTION model
+just include the target source code, and execute it with parameters.
 
     $router = include("router.inc.php");
     $router->execute();
