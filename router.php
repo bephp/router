@@ -13,6 +13,11 @@ class Router {
     const LEAF = 'LEAF';
     const HOOK = 'HOOK';
     const TOKEN = 'TOKEN';
+    public function __construct($tree=array(), $error=array(), $hook=array()){
+        $this->_tree = $tree;
+        $this->_error = $error;
+        $this->_hook = $hook;
+    }
     /* helper function to create the tree based on urls, handlers will stored to leaf. */
     protected function match_one_path(&$node, $tokens, $cb, $hook){
         $token = array_shift($tokens);
@@ -33,7 +38,6 @@ class Router {
     /* helper function to find handler by $path. */
     protected function _resolve($node, $tokens, $params){
         $current_token = array_shift($tokens);
-        //var_dump($tokens, $current_token, $node);
         if (!$current_token && array_key_exists(self::LEAF, $node)) 
             return array($node[self::LEAF], $params, $node[self::HOOK]);
         if (array_key_exists($current_token, $node))
@@ -106,8 +110,9 @@ class Router {
             $key = array_shift($args);
             if (($_name = '_'. $name) && isset($args[0]) && is_callable($args[0]))
                 $this->{$_name}[$key] = $args[0];
-            elseif (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
+            else if (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
                 return call_user_func_array($this->{$_name}[$key], $args);
+            else return $args[0];
             return $this;
         }
     }
