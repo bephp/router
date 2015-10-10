@@ -100,7 +100,7 @@ class Router {
     public function __call($name, $args){
         if (in_array($name, array('get', 'post', 'put', 'patch', 'delete', 'trace', 'connect', 'options', 'head'))){
             array_unshift($args, strtoupper($name));
-            return call_user_method_array('match', $this, $args);
+            return call_user_func_array(array($this, 'match'), $args);
         }
         if (in_array($name, array('error', 'hook'))){
             $key = array_shift($args);
