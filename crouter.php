@@ -53,7 +53,7 @@ class CRouter extends Router {
     /**
      * compile router into source code, and execute the compiled source code with parameters.
      */
-    public function execute(){
+    public function execute($params=array(), $method=null, $path=null){
         if ($this->needComplie()){
             $code = "<?php\nreturn new Router("
                 . $this->export($this->_tree, true). ', '
@@ -62,7 +62,7 @@ class CRouter extends Router {
             file_put_contents($this->target, $code);
         }
         $router = include ($this->target);
-        $router->execute(func_get_args());
+        $router->execute($params, $method, $path);
     }
 }
 
