@@ -12,38 +12,44 @@ class Router {
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
     const HOOK = 'HOOK';
+    const TOKEN = 'TOKEN';
     /* helper function to create the tree based on urls, handlers will stored to leaf. */
     protected function match_one_path(&$node, $tokens, $cb, $hook){
         $token = array_shift($tokens);
-        if ($token && !array_key_exists($token, $node))
-            $node[$token] = array();
-        if ($token)
-            return $this->match_one_path($node[$token], $tokens, $cb, $hook);
+        $is_token = ($token && self::COLON == $token[0]);
+        $real_token = $is_token ? substr($token, 1) : $token;
+        if (!array_key_exists(self::TOKEN, $node))
+            $node[self::TOKEN] = array();
+        if (!$is_token && $real_token && !array_key_exists($real_token, $node))
+            $node[$real_token] = array();
+        if ($is_token && $real_token && !array_key_exists($real_token, $node[self::TOKEN]))
+            $node[self::TOKEN][$real_token] = array();
+        if ($real_token)
+            if ($is_token) return $this->match_one_path($node[self::TOKEN][$real_token], $tokens, $cb, $hook);
+            else return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
         $node[self::LEAF] = $cb;
         $node[self::HOOK] = (array)($hook);
     }
     /* helper function to find handler by $path. */
     protected function _resolve($node, $tokens, $params){
         $current_token = array_shift($tokens);
+        //var_dump($tokens, $current_token, $node);
         if (!$current_token && array_key_exists(self::LEAF, $node)) 
             return array($node[self::LEAF], $params, $node[self::HOOK]);
-        foreach($node as $child_token=>$child_node){
-            if ($child_token == $current_token)
-                return $this->_resolve($child_node, $tokens, $params);
+        if (array_key_exists($current_token, $node))
+            return $this->_resolve($node[$current_token], $tokens, $params);
+        foreach($node[self::TOKEN] as $child_token=>$child_node){
             /**
              * if $current_token not null, and $child_token start with ":"
              * set the parameter named $pname and resolve next $path.
              * if can not resolve with next $path, restore the parameter named $pname.
              */
-            if ($current_token && $child_token[0] == self::COLON){
-                $pname = substr($child_token, 1);
-                $pvalue = array_key_exists($pname, $params) ? $params[$pname] : null;
-                $params[$pname] = $current_token;
-                if (!$current_token) return array($child_node[self::LEAF], $params);
-                list($cb, $params, $hook) = $this->_resolve($child_node, $tokens, $params);
-                if (is_callable($cb)) return array($cb, $params, $hook);
-                $params[$pname] = $pvalue;
-            }
+            $pvalue = array_key_exists($child_token, $params) ? $params[$child_node] : null;
+            $params[$child_token] = $current_token;
+            if (!$current_token) return array($child_node[self::LEAF], $params);
+            list($cb, $params, $hook) = $this->_resolve($child_node, $tokens, $params);
+            if (is_callable($cb)) return array($cb, $params, $hook);
+            $params[$child_token] = $pvalue;
         }
         return array(false, '', null);
     }
