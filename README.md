@@ -58,6 +58,30 @@ just include the target source code, and execute it with parameters.
 1. using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n).
 2. using CRouter class, suport to compile router callback handlers into plain array source code. so can save time to create tree node to store callback by split pathinfo.
 
+### [Benchmark](https://github.com/lloydzhou/php-router-benchmark)
+
+using "php-router-benchmark" to test router performance.
+
+#### Worst-case matching
+This benchmark matches the last route and unknown route. It generates a randomly prefixed and suffixed route in an attempt to thwart any optimization. 1,000 routes each with 9 arguments.
+
+This benchmark consists of 10 tests. Each test is executed 1,000 times, the results pruned, and then averaged. Values that fall outside of 3 standard deviations of the mean are discarded.
+
+
+Test Name | Results | Time | + Interval | Change
+--------- | ------- | ---- | ---------- | ------
+Router - unknown route (1000 routes) | 993 | 0.0000232719 | +0.0000000000 | baseline
+Router - last route (1000 routes) | 981 | 0.0000955424 | +0.0000722705 | 311% slower
+FastRoute - unknown route (1000 routes) | 990 | 0.0005051955 | +0.0004819236 | 2071% slower
+FastRoute - last route (1000 routes) | 998 | 0.0005567203 | +0.0005334484 | 2292% slower
+Symfony2 Dumped - unknown route (1000 routes) | 998 | 0.0006116139 | +0.0005883420 | 2528% slower
+Symfony2 Dumped - last route (1000 routes) | 998 | 0.0007765370 | +0.0007532651 | 3237% slower
+Symfony2 - unknown route (1000 routes) | 996 | 0.0028456177 | +0.0028223458 | 12128% slower
+Symfony2 - last route (1000 routes) | 993 | 0.0030129542 | +0.0029896823 | 12847% slower
+Aura v2 - last route (1000 routes) | 989 | 0.1707107230 | +0.1706874511 | 733450% slower
+Aura v2 - unknown route (1000 routes) | 988 | 0.1798588730 | +0.1798356011 | 772760% slower
+
+
 ## Example
 
 belong is one simple example, see the full examples in [test.php](https://github.com/lloydzhou/router/blob/master/test.php).
