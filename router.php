@@ -11,7 +11,6 @@ class Router {
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
-    const HOOK = 'HOOK';
     const TOKEN = 'TOKEN';
     public function __construct($tree=array(), $error=array(), $hook=array()){
         $this->_tree = $tree;
@@ -32,14 +31,13 @@ class Router {
         if ($real_token)
             if ($is_token) return $this->match_one_path($node[self::TOKEN][$real_token], $tokens, $cb, $hook);
             else return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
-        $node[self::LEAF] = $cb;
-        $node[self::HOOK] = (array)($hook);
+        $node[self::LEAF] = array($cb, (array)($hook));
     }
     /* helper function to find handler by $path. */
     protected function _resolve($node, $tokens, $params){
         $current_token = array_shift($tokens);
-        if (!$current_token && array_key_exists(self::LEAF, $node)) 
-            return array($node[self::LEAF], $params, $node[self::HOOK]);
+        if (!$current_token && array_key_exists(self::LEAF, $node) && $node[self::LEAF][2] = $params) 
+            return $node[self::LEAF];
         if (array_key_exists($current_token, $node))
             return $this->_resolve($node[$current_token], $tokens, $params);
         foreach($node[self::TOKEN] as $child_token=>$child_node){
@@ -50,9 +48,10 @@ class Router {
              */
             $pvalue = array_key_exists($child_token, $params) ? $params[$child_node] : null;
             $params[$child_token] = $current_token;
-            if (!$current_token) return array($child_node[self::LEAF], $params);
-            list($cb, $params, $hook) = $this->_resolve($child_node, $tokens, $params);
-            if (is_callable($cb)) return array($cb, $params, $hook);
+            if (!$current_token && $child_node[self::LEAF][2] = $params)
+                return $child_node[self::LEAF];
+            list($cb, $hook, $params) = $this->_resolve($child_node, $tokens, $params);
+            if ($cb) return array($cb, $hook, $params);
             $params[$child_token] = $pvalue;
         }
         return array(false, '', null);
@@ -66,7 +65,7 @@ class Router {
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
         $path = trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
-        list($cb, $params, $hook) = $this->resolve($method, $path, $params);
+        list($cb, $hook, $params) = $this->resolve($method, $path, $params);
         if (!is_callable($cb)) return array(null, $this->error(405, "Could not resolve [$method] $path"));
         /**
          * merge the $roter and all $request values into $params.
