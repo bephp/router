@@ -11,7 +11,6 @@ class Router {
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
-    const TOKEN = 'TOKEN';
     public function __construct($tree=array(), $error=array(), $hook=array()){
         $this->_tree = $tree;
         $this->_error = $error;
@@ -22,14 +21,14 @@ class Router {
         $token = array_shift($tokens);
         $is_token = ($token && self::COLON == $token[0]);
         $real_token = $is_token ? substr($token, 1) : $token;
-        if (!array_key_exists(self::TOKEN, $node))
-            $node[self::TOKEN] = array();
+        if (!array_key_exists(self::COLON, $node))
+            $node[self::COLON] = array();
         if (!$is_token && $real_token && !array_key_exists($real_token, $node))
             $node[$real_token] = array();
-        if ($is_token && $real_token && !array_key_exists($real_token, $node[self::TOKEN]))
-            $node[self::TOKEN][$real_token] = array();
+        if ($is_token && $real_token && !array_key_exists($real_token, $node[self::COLON]))
+            $node[self::COLON][$real_token] = array();
         if ($real_token)
-            if ($is_token) return $this->match_one_path($node[self::TOKEN][$real_token], $tokens, $cb, $hook);
+            if ($is_token) return $this->match_one_path($node[self::COLON][$real_token], $tokens, $cb, $hook);
             else return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
         $node[self::LEAF] = array($cb, (array)($hook));
     }
@@ -40,7 +39,7 @@ class Router {
             return $node[self::LEAF];
         if (array_key_exists($current_token, $node))
             return $this->_resolve($node[$current_token], $tokens, $params);
-        foreach($node[self::TOKEN] as $child_token=>$child_node){
+        foreach($node[self::COLON] as $child_token=>$child_node){
             /**
              * if $current_token not null, and $child_token start with ":"
              * set the parameter named $pname and resolve next $path.
