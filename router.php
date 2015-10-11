@@ -63,7 +63,7 @@ class Router {
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
         $path = trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
         list($cb, $hook, $params) = $this->resolve($method, $path, $params);
-        if (!is_callable($cb)) return array(null, $this->error(405, "Could not resolve [$method] $path"));
+        if (!is_callable($cb)) return $this->error(405, "Could not resolve [$method] $path");
         /**
          * merge the $roter and all $request values into $params.
          * auto call the "before" hook before execute the callback handler, and call "after" hook with return value of handler.
