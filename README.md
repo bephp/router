@@ -1,4 +1,4 @@
-# router
+# router [![Build Status](https://travis-ci.org/lloydzhou/router.svg?branch=master)](https://travis-ci.org/lloydzhou/router)
 *A barebones router for PHP.*  
 *It matches urls and executes PHP functions.*  
 *Automatic get variable based on handler function parameter list.*  
