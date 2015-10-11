@@ -19,17 +19,15 @@ class Router {
     /* helper function to create the tree based on urls, handlers will stored to leaf. */
     protected function match_one_path(&$node, $tokens, $cb, $hook){
         $token = array_shift($tokens);
-        $is_token = ($token && self::COLON == $token[0]);
-        $real_token = $is_token ? substr($token, 1) : $token;
         if (!array_key_exists(self::COLON, $node))
             $node[self::COLON] = array();
-        if (!$is_token && $real_token && !array_key_exists($real_token, $node))
+        $is_token = ($token && self::COLON == $token[0]);
+        $real_token = $is_token ? substr($token, 1) : $token;
+        if ($is_token) $node = &$node[self::COLON];
+        if ($real_token && !array_key_exists($real_token, $node))
             $node[$real_token] = array();
-        if ($is_token && $real_token && !array_key_exists($real_token, $node[self::COLON]))
-            $node[self::COLON][$real_token] = array();
         if ($real_token)
-            if ($is_token) return $this->match_one_path($node[self::COLON][$real_token], $tokens, $cb, $hook);
-            else return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
+            return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
         $node[self::LEAF] = array($cb, (array)($hook));
     }
     /* helper function to find handler by $path. */
