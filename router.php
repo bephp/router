@@ -35,8 +35,8 @@ class Router {
     /* helper function to find handler by $path. */
     protected function _resolve($node, $tokens, $params){
         $current_token = array_shift($tokens);
-        if (!$current_token && array_key_exists(self::LEAF, $node) && $node[self::LEAF][2] = $params) 
-            return $node[self::LEAF];
+        if (!$current_token && array_key_exists(self::LEAF, $node))
+            return array($node[self::LEAF][0], $node[self::LEAF][1], $params);
         if (array_key_exists($current_token, $node))
             return $this->_resolve($node[$current_token], $tokens, $params);
         foreach($node[self::COLON] as $child_token=>$child_node){
@@ -47,8 +47,8 @@ class Router {
              */
             $pvalue = array_key_exists($child_token, $params) ? $params[$child_node] : null;
             $params[$child_token] = $current_token;
-            if (!$current_token && $child_node[self::LEAF][2] = $params)
-                return $child_node[self::LEAF];
+            if (!$current_token && array_key_exists(self::LEAF, $child_node))
+                return array($child_node[self::LEAF][0], $child_node[self::LEAF][1], $params);
             list($cb, $hook, $params) = $this->_resolve($child_node, $tokens, $params);
             if ($cb) return array($cb, $hook, $params);
             $params[$child_token] = $pvalue;

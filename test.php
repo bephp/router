@@ -27,11 +27,11 @@ class Handler{
 // dev
 (new CRouter('router.inc.php', true))
 ->error(401, function($message){
-    header('Location: /login', true, 302);
+    header('Location: /login', true, 401);
     die($message);
 })
 ->error(405, function($message){
-    header('Location: /hello/world', true, 302);
+    header('Location: /hello/world', true, 405);
 })
 ->error(406, function($message){
     die($message);
