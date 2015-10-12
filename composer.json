@@ -2,7 +2,7 @@
     "name": "lloydzhou/router",
     "type": "library",
     "description": "A barebones router for PHP. It matches urls and executes PHP functions. automatic get variable based on handler function parameter list. Suport to compile router callback handlers into plain array source code.",
-    "keywords": ["router", "micro", "library"],
+    "keywords": ["router", "micro", "fast", "library"],
     "homepage": "https://github.com/lloydzhou/router",
     "license": "MIT",
     "require": {

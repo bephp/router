@@ -84,7 +84,7 @@ Aura v2 - unknown route (1000 routes) | 988 | 0.1798588730 | +0.1798356011 | 772
 
 ## Example
 
-belong is one simple example, see the full examples in [test.php](https://github.com/lloydzhou/router/blob/master/test.php).
+belong is one simple example, see the full examples in [example.php](https://github.com/lloydzhou/router/blob/master/example.php).
 
     (new Router())
     ->error(405, function($message){
@@ -96,7 +96,7 @@ belong is one simple example, see the full examples in [test.php](https://github
 
 ### Start server
 
-    php -S 0.0.0.0:8888 test.php
+    php -S 0.0.0.0:8888 example.php
 
 ### Test
 
