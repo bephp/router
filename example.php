@@ -32,6 +32,7 @@ class Handler{
 })
 ->error(405, function($message){
     header('Location: /hello/world', true, 405);
+    die($message);
 })
 ->error(406, function($message){
     die($message);

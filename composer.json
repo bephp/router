@@ -9,7 +9,7 @@
         "php": ">=5.3.0"
     },
     "require-dev": {
-        "simplon/request":"*",
+        "lloydzhou/request":"*",
         "phpunit/phpunit": "*"
     },
     "autoload": {
