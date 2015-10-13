@@ -56,6 +56,7 @@ class Handler{
 ->get('/', function(){
     echo "Hello world !!!";
 })
+->post('/hello', array('Handler', 'hello'), 'auth')
 ->get('/hello/:name', array(new Handler(), 'hello'))
 ->get('/hello/:name/again', array('Handler', 'hello_again'), 'auth')
 ->get('/hello/:name.:ext', function($name, $ext){

@@ -111,4 +111,54 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
         $response = $r->execute(array(), 'GET', '/hello/lloyd');
         $this->assertEquals('some error', $response);
     }
+
+    // test in build-in server
+    // see the server side code in "example.php" 
+    public function getRequest(){
+        return new \Simplon\Request\Request();
+    }
+    public function testGet405(){
+        $response = $this->getRequest()->get('http://127.0.0.1:8889/foo');
+        $this->assertEquals(405, $response->getHttpCode());
+        $this->assertFalse($response->getContent());
+    }
+    public function testGet401(){
+        $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/world/again');
+        $this->assertEquals(401, $response->getHttpCode());
+        $this->assertEquals('Forbiden', $response->getContent());
+    }
+    public function testGet200(){
+        // test '/hello/:name'
+        $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/lloyd');
+        $this->assertEquals(200, $response->getHttpCode());
+        $this->assertEquals('Hello lloyd !!!', $response->getContent());
+        // test '/hello/:name/again'
+        $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/lloyd/again');
+        $this->assertEquals(200, $response->getHttpCode());
+        $this->assertEquals('Hello lloyd again !!!', $response->getContent());
+        // test '/hello/:name.:ext'
+        $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/lloyd.json');
+        $this->assertEquals(200, $response->getHttpCode());
+        $this->assertEquals('{"name":"lloyd"}', $response->getContent());
+        $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/lloyd.js?jsoncallback=test');
+        $this->assertEquals(200, $response->getHttpCode());
+        $this->assertEquals('test({"name":"lloyd"})', $response->getContent());
+        $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/lloyd.jsx?jsoncallback=test');
+        $this->assertEquals(200, $response->getHttpCode());
+        $this->assertEquals('test({"code":1,"msg":"error message..."})', $response->getContent());
+    }
+    public function testPost401(){
+        $response = $this->getRequest()->post('http://127.0.0.1:8889/hello', array('name'=>'world'));
+        $this->assertEquals(401, $response->getHttpCode());
+        $this->assertEquals('Forbiden', $response->getContent());
+    }
+    public function testPost200(){
+        $response = $this->getRequest()->post('http://127.0.0.1:8889/hello', array('name'=>'lloyd'));
+        $this->assertEquals(200, $response->getHttpCode());
+        $this->assertEquals('Hello lloyd !!!', $response->getContent());
+        // post data using json format.
+        $response = $this->getRequest()->post('http://127.0.0.1:8889/hello', array('name'=>'lloyd'), array(CURLOPT_HTTPHEADER=>array('Content-Type: application/json')), \Simplon\Request\Request::DATA_FORMAT_JSON);
+        $this->assertEquals(200, $response->getHttpCode());
+        $this->assertEquals('Hello lloyd !!!', $response->getContent());
+    }
 }

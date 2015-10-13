@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="false"
-         bootstrap="vendor/autoload.php"
+         bootstrap="test/bootstrap.php"
         >
     <testsuites>
         <testsuite name="Router Tests">
