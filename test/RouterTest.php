@@ -117,16 +117,25 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
     public function getRequest(){
         return new \Simplon\Request\Request();
     }
+    /**
+     * @requires PHP 5.4
+     */
     public function testGet405(){
         $response = $this->getRequest()->get('http://127.0.0.1:8889/foo');
         $this->assertEquals(405, $response->getHttpCode());
         $this->assertEquals('Could not resolve [GET] foo', $response->getContent());
     }
+    /**
+     * @requires PHP 5.4
+     */
     public function testGet401(){
         $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/world/again');
         $this->assertEquals(401, $response->getHttpCode());
         $this->assertEquals('Forbiden', $response->getContent());
     }
+    /**
+     * @requires PHP 5.4
+     */
     public function testGet200(){
         // test '/hello/:name'
         $response = $this->getRequest()->get('http://127.0.0.1:8889/hello/lloyd');
@@ -147,11 +156,17 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
         $this->assertEquals(200, $response->getHttpCode());
         $this->assertEquals('test({"code":1,"msg":"error message..."})', $response->getContent());
     }
+    /**
+     * @requires PHP 5.4
+     */
     public function testPost401(){
         $response = $this->getRequest()->post('http://127.0.0.1:8889/hello', array('name'=>'world'));
         $this->assertEquals(401, $response->getHttpCode());
         $this->assertEquals('Forbiden', $response->getContent());
     }
+    /**
+     * @requires PHP 5.4
+     */
     public function testPost200(){
         $response = $this->getRequest()->post('http://127.0.0.1:8889/hello', array('name'=>'lloyd'));
         $this->assertEquals(200, $response->getHttpCode());
