@@ -13,3 +13,7 @@ before_script:
 script:
   - ./vendor/bin/phpunit
 
+matrix:
+  allow_failures:
+    - 5.3
+
