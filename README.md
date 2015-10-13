@@ -1,4 +1,9 @@
-# router [![Build Status](https://travis-ci.org/lloydzhou/router.svg?branch=master)](https://travis-ci.org/lloydzhou/router)
+# router 
+[![Build Status](https://travis-ci.org/lloydzhou/router.svg?branch=master)](https://travis-ci.org/lloydzhou/router)
+[![Latest Stable Version](https://poser.pugx.org/lloydzhou/router/v/stable)](https://packagist.org/packages/lloydzhou/router)
+[![Total Downloads](https://poser.pugx.org/lloydzhou/router/downloads)](https://packagist.org/packages/lloydzhou/router)
+[![Latest Unstable Version](https://poser.pugx.org/lloydzhou/router/v/unstable)](https://packagist.org/packages/lloydzhou/router)
+[![License](https://poser.pugx.org/lloydzhou/router/license)](https://packagist.org/packages/lloydzhou/router)  
 *A barebones router for PHP.*  
 *It matches urls and executes PHP functions.*  
 *Automatic get variable based on handler function parameter list.*  
