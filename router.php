@@ -70,7 +70,8 @@ class Router {
          * need define the hook with @param $params, and @return $params, so can change it in the hook handler.
          * if the hook return false, will trigger 406 error handler.
          */
-        $input = ('application/json' == $_SERVER['HTTP_CONTENT_TYPE'] || 'application/json' == $_SERVER['CONTENT_TYPE'])
+        $input = ((isset($_SERVER['HTTP_CONTENT_TYPE']) && 'application/json' == $_SERVER['HTTP_CONTENT_TYPE'])
+            || (isset($_SERVER['CONTENT_TYPE']) && 'application/json' == $_SERVER['CONTENT_TYPE']))
             ? (array)json_decode(file_get_contents('php://input'), true) : array();
         $params = array_merge($params, $_SERVER, $_REQUEST, $input, $_FILES, $_COOKIE, isset($_SESSION)?$_SESSION:array(), array('router'=>$this));
         foreach(array_merge(array('before'), $hook) as $i=>$h){
