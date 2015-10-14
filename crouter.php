@@ -62,7 +62,7 @@ class CRouter extends Router {
             file_put_contents($this->target, $code);
         }
         $router = include ($this->target);
-        $router->execute($params, $method, $path);
+        return $router->execute($params, $method, $path);
     }
 }
 

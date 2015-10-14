@@ -1,53 +1,95 @@
 <?php 
 
 class RouterTest extends \PHPUnit_Framework_TestCase{
-    public function router(){
+    public function router($compile=false){
+        if ($compile)
+            return new \CRouter('index.inc', true);
         return new \Router();
     }
     public function testRootDispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/', function(){ return 'bar'; });
+        $response = $r->execute(array(), 'GET', '/');
+        $this->assertEquals('bar',$response);
+
+        $r = $this->router(true);
         $r->get('/', function(){ return 'bar'; });
         $response = $r->execute(array(), 'GET', '/');
         $this->assertEquals('bar',$response);
     }
     public function testStringDispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/foo', function(){ return 'bar'; });
+        $response = $r->execute(array(), 'GET', '/foo');
+        $this->assertEquals('bar',$response);
+
+        $r = $this->router(true);
         $r->get('/foo', function(){ return 'bar'; });
         $response = $r->execute(array(), 'GET', '/foo');
         $this->assertEquals('bar',$response);
     }
     public function testParamDispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/hello/:name', function($name){ return $name; });
+        $response = $r->execute(array(), 'GET', '/hello/lloyd');
+        $this->assertEquals('lloyd',$response);
+
+        $r = $this->router(true); 
         $r->get('/hello/:name', function($name){ return $name; });
         $response = $r->execute(array(), 'GET', '/hello/lloyd');
         $this->assertEquals('lloyd',$response);
     }
     public function testParamsDispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/hello/:name1/:name2', function($name1, $name2){ return $name1. $name2; });
+        $response = $r->execute(array(), 'GET', '/hello/lloyd/zhou');
+        $this->assertEquals('lloydzhou',$response);
+
+        $r = $this->router(true);
         $r->get('/hello/:name1/:name2', function($name1, $name2){ return $name1. $name2; });
         $response = $r->execute(array(), 'GET', '/hello/lloyd/zhou');
         $this->assertEquals('lloydzhou',$response);
     }
     public function testParamsExtDispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/hello/:name.:ext', function($name, $ext){ return $name. '.'. $ext; });
+        $response = $r->execute(array(), 'GET', '/hello/lloyd.json');
+        $this->assertEquals('lloyd.json',$response);
+
+        $r = $this->router(true);
         $r->get('/hello/:name.:ext', function($name, $ext){ return $name. '.'. $ext; });
         $response = $r->execute(array(), 'GET', '/hello/lloyd.json');
         $this->assertEquals('lloyd.json',$response);
     }
     public function testParamExecuteDefaultDispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/hello/:name', function($name, $ext='json'){ return $name. '.'. $ext; });
+        $response = $r->execute(array(), 'GET', '/hello/lloyd');
+        $this->assertEquals('lloyd.json',$response);
+
+        $r = $this->router(true);
         $r->get('/hello/:name', function($name, $ext='json'){ return $name. '.'. $ext; });
         $response = $r->execute(array(), 'GET', '/hello/lloyd');
         $this->assertEquals('lloyd.json',$response);
     }
     public function testParamExecuteDispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/hello/:name', function($name, $ext){ return $name. '.'. $ext; });
+        $response = $r->execute(array(), 'GET', '/hello/lloyd');
+        $this->assertEquals('lloyd.',$response);
+
+        $r = $this->router(true);
         $r->get('/hello/:name', function($name, $ext){ return $name. '.'. $ext; });
         $response = $r->execute(array(), 'GET', '/hello/lloyd');
         $this->assertEquals('lloyd.',$response);
     }
     public function testParamExecute1Dispatched(){
-        $r = $this->router(); 
+        $r = $this->router();
+        $r->get('/hello/:name', function($name, $ext){ return $name. '.'. $ext; });
+        $response = $r->execute(array('ext'=>'js'), 'GET', '/hello/lloyd');
+        $this->assertEquals('lloyd.js',$response);
+
+        $r = $this->router(true);
         $r->get('/hello/:name', function($name, $ext){ return $name. '.'. $ext; });
         $response = $r->execute(array('ext'=>'js'), 'GET', '/hello/lloyd');
         $this->assertEquals('lloyd.js',$response);

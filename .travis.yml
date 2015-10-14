@@ -11,9 +11,9 @@ before_script:
   - composer install --prefer-dist --dev
 
 script:
-  - ./vendor/bin/phpunit
+  - mkdir -p build/logs
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
-matrix:
-  allow_failures:
-    - 5.3
+after_script:
+  - php vendor/bin/coveralls -v
 
