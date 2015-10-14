@@ -64,10 +64,24 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
         $response = $r->execute(array('ext'=>'js'), 'GET', '/hello/lloyd');
         $this->assertEquals('lloyd.json',$response);
     }
-    public function testCustomerHook(){
+    public function testCustomerHookHandleErrorOutside(){
         $r = $this->router(); 
         $r->hook('auth', function($params){
             return false;
+        });
+        $r->get('/hello/:name', function($name, $ext){ return $name; }, array('auth'));
+        set_error_handler(function($errno, $errstr){
+            $this->assertEquals('"406" not defined to handler error: Failed to execute hook: auth', $errstr);
+        });
+        $response = $r->execute(array(), 'GET', '/hello/lloyd');
+        restore_error_handler();
+    }
+    public function testCustomerHookNotHandleInside(){
+        $r = $this->router();
+        $r->hook('auth', function($params){
+            return false;
+        })->error(406, function($message){
+            return $message;
         });
         $r->get('/hello/:name', function($name, $ext){ return $name; }, array('auth'));
         $response = $r->execute(array(), 'GET', '/hello/lloyd');

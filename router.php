@@ -111,7 +111,7 @@ class Router {
                 $this->{$_name}[$key] = $args[0];
             else if (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
                 return call_user_func_array($this->{$_name}[$key], $args);
-            else return $args[0];
+            else return ('error' == $name) ? trigger_error('"'.$key.'" not defined to handler error: '.$args[0]) : $args[0];
             return $this;
         }
     }
