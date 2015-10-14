@@ -70,7 +70,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
             return false;
         });
         $r->get('/hello/:name', function($name, $ext){ return $name; }, array('auth'));
-        set_error_handler(function($errno, $errstr){
+        $router = $this;
+        set_error_handler(function($errno, $errstr) use ($router){
             $this->assertEquals('"406" not defined to handler error: Failed to execute hook: auth', $errstr);
         });
         $response = $r->execute(array(), 'GET', '/hello/lloyd');
