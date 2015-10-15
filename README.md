@@ -10,6 +10,8 @@
 *Automatic get variable based on handler function parameter list.*  
 *Suport to compile router callback handlers into plain array source code.*  
 
+> [中文版](https://github.com/lloydzhou/router/blob/master/README.zh-CN.md).
+
 ## Installation
 
     composer require lloydzhou/router
