@@ -63,7 +63,7 @@ just include the target source code, and execute it with parameters.
 
 ## Performance
 
-1. using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n).
+1. using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n). ![Tree Node](https://raw.githubusercontent.com/lloydzhou/router/master/node.svg)
 2. using CRouter class, suport to compile router callback handlers into plain array source code. so can save time to create tree node to store callback by split pathinfo.
 
 ### [Benchmark](https://github.com/lloydzhou/php-router-benchmark)

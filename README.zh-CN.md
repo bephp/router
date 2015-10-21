@@ -69,7 +69,7 @@ web程序入口，支持传递3个参数，不过参数是可选的。
 
 ## 性能
 
-1. 使用树形结构存储回调函数。树形结构有个特点就是查找一个节点（回调函数）的时间复杂度为O(log n)。  
+1. 使用树形结构存储回调函数。树形结构有个特点就是查找一个节点（回调函数）的时间复杂度为O(log n)。 ![Tree Node](https://raw.githubusercontent.com/lloydzhou/router/master/node.svg)
 2. 使用CRouter支持编译特性。大家都知道树形结构查找比较快，在构建这颗树的时候，相应的花的时间也比创建列表时间更多。使用编译，就能节省创建树形节点的时间，直接使用创建好的树形数组初始化，速度会比普通的路由控制器直接创建列表速度还要快！  
 
 ### [性能测试](https://github.com/lloydzhou/php-router-benchmark)
