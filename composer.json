@@ -1,5 +1,5 @@
 {
-    "name": "lloydzhou/router",
+    "name": "bephp/router",
     "type": "library",
     "description": "A fast router for PHP. It matches urls and executes PHP functions. automatic get variable based on handler function parameter list. Suport to compile router callback handlers into plain array source code.",
     "keywords": ["router", "micro", "fast", "library"],
