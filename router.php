@@ -53,15 +53,17 @@ class Router {
         }
         return array(false, '', null);
     }
+    protected function _split($path){
+        return explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
+    }
     public function resolve($method, $path, $params){
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
-        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
-        return $this->_resolve($this->_tree[$method], $tokens, $params);
+        return $this->_resolve($this->_tree[$method], $this->_split($path), $params);
     }
     /* API to find handler and execute it by parameters. */
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
-        $path = trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
+        $path = $path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         list($cb, $hook, $params) = $this->resolve($method, $path, $params);
         if (!is_callable($cb)) return $this->error(405, "Could not resolve [$method] $path");
         /**
@@ -90,13 +92,9 @@ class Router {
         /* execute the callback handler and pass the result into "after" hook handler.*/
         return $this->hook('after', call_user_func_array($cb, $args), $this);
     }
-    public function match($method, $path, $cb, $hook=array()){
-        if (!is_array($method)) $method = array($method=>array($path=>$cb));
-        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
-        foreach($method as $m=>$routes){
-            if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
-            $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
-        }
+    public function match($method, $path, $cb, $hook=null){
+        if (!array_key_exists($method, $this->_tree)) $this->_tree[$method] = array();
+        $this->match_one_path($this->_tree[$method], $this->_split($path), $cb, $hook);
         return $this;
     }
     /* register api based on request method. also register "error" and "hook" API. */

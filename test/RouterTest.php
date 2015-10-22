@@ -180,7 +180,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
     public function testGet405(){
         $response = $this->getRequest()->get('http://127.0.0.1:8889/foo');
         $this->assertEquals(405, $response->getHttpCode());
-        $this->assertEquals('Could not resolve [GET] foo', $response->getContent());
+        $this->assertEquals('Could not resolve [GET] /foo', $response->getContent());
     }
     /**
      * @requires PHP 5.4
