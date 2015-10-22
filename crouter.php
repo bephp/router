@@ -13,7 +13,7 @@ class CRouter extends Router {
     protected $compile = null;
 
     /* helper function to get the compile status*/
-    protected function needComplie(){
+    protected function needCompile(){
         if (null === $this->compile){
             $this->compile = ($this->debug || !file_exists($this->target) 
                 || @filemtime($_SERVER['SCRIPT_FILENAME'])>@filemtime($this->target));
@@ -54,7 +54,7 @@ class CRouter extends Router {
      * compile router into source code, and execute the compiled source code with parameters.
      */
     public function execute($params=array(), $method=null, $path=null){
-        if ($this->needComplie()){
+        if ($this->needCompile()){
             $code = "<?php\nreturn new Router("
                 . $this->export($this->_tree, true). ', '
                 . $this->export($this->_error, true). ', '
