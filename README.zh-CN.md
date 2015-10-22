@@ -1,10 +1,10 @@
 # Router 路由控制器
-[![Build Status](https://travis-ci.org/lloydzhou/router.svg?branch=master)](https://travis-ci.org/lloydzhou/router)
-[![Coverage Status](https://coveralls.io/repos/lloydzhou/router/badge.svg?branch=master&service=github)](https://coveralls.io/github/lloydzhou/router?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/lloydzhou/router/v/stable)](https://packagist.org/packages/lloydzhou/router)
-[![Total Downloads](https://poser.pugx.org/lloydzhou/router/downloads)](https://packagist.org/packages/lloydzhou/router)
-[![Latest Unstable Version](https://poser.pugx.org/lloydzhou/router/v/unstable)](https://packagist.org/packages/lloydzhou/router)
-[![License](https://poser.pugx.org/lloydzhou/router/license)](https://packagist.org/packages/lloydzhou/router)  
+[![Build Status](https://travis-ci.org/bephp/router.svg?branch=master)](https://travis-ci.org/bephp/router)
+[![Coverage Status](https://coveralls.io/repos/bephp/router/badge.svg?branch=master&service=github)](https://coveralls.io/github/bephp/router?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/bephp/router/v/stable)](https://packagist.org/packages/bephp/router)
+[![Total Downloads](https://poser.pugx.org/bephp/router/downloads)](https://packagist.org/packages/bephp/router)
+[![Latest Unstable Version](https://poser.pugx.org/bephp/router/v/unstable)](https://packagist.org/packages/bephp/router)
+[![License](https://poser.pugx.org/bephp/router/license)](https://packagist.org/packages/bephp/router)  
 *一个及其精简的PHP路由控制器。*  
 *匹配URL找到对应的回调函数，并执行*
 *依据回调函数的参数列表自动从请求里面获取变量*
@@ -69,10 +69,10 @@ web程序入口，支持传递3个参数，不过参数是可选的。
 
 ## 性能
 
-1. 使用树形结构存储回调函数。树形结构有个特点就是查找一个节点（回调函数）的时间复杂度为O(log n)。 ![Tree Node](https://raw.githubusercontent.com/lloydzhou/router/master/node.jpeg)
+1. 使用树形结构存储回调函数。树形结构有个特点就是查找一个节点（回调函数）的时间复杂度为O(log n)。 ![Tree Node](https://raw.githubusercontent.com/bephp/router/master/node.jpeg)
 2. 使用CRouter支持编译特性。大家都知道树形结构查找比较快，在构建这颗树的时候，相应的花的时间也比创建列表时间更多。使用编译，就能节省创建树形节点的时间，直接使用创建好的树形数组初始化，速度会比普通的路由控制器直接创建列表速度还要快！  
 
-### [性能测试](https://github.com/lloydzhou/php-router-benchmark)
+### [性能测试](https://github.com/bephp/php-router-benchmark)
 
 使用"php-router-benchmark"来专门测试路由控制器的性能
 
@@ -100,7 +100,7 @@ Aura v2 - unknown route (1000 routes) | 988 | 0.1798588730 | +0.1798356011 | 772
 
 ## 例子
 
-以下部分是一个简单的例子，详细的示例请查看[example.php](https://github.com/lloydzhou/router/blob/master/example.php)文件.
+以下部分是一个简单的例子，详细的示例请查看[example.php](https://github.com/bephp/router/blob/master/example.php)文件.
 
     (new Router())
     ->error(405, function($message){
@@ -154,6 +154,6 @@ URL匹配上了，返回正确结果
 
 ## Demo程序
 
-这里有一个相对比较完整的[博客demo](https://github.com/lloydzhou/blog), 和一个数据访问[ActiveRecord](https://github.com/lloydzhou/activerecord)以及模板[MicroTpl](https://github.com/lloydzhou/microtpl)一起完成，很简洁。
+这里有一个相对比较完整的[博客demo](https://github.com/bephp/blog), 和一个数据访问[ActiveRecord](https://github.com/bephp/activerecord)以及模板[MicroTpl](https://github.com/bephp/microtpl)一起完成，很简洁。
 
 

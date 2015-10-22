@@ -1,16 +1,16 @@
 # router 
-[![Build Status](https://travis-ci.org/lloydzhou/router.svg?branch=master)](https://travis-ci.org/lloydzhou/router)
-[![Coverage Status](https://coveralls.io/repos/lloydzhou/router/badge.svg?branch=master&service=github)](https://coveralls.io/github/lloydzhou/router?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/lloydzhou/router/v/stable)](https://packagist.org/packages/lloydzhou/router)
-[![Total Downloads](https://poser.pugx.org/lloydzhou/router/downloads)](https://packagist.org/packages/lloydzhou/router)
-[![Latest Unstable Version](https://poser.pugx.org/lloydzhou/router/v/unstable)](https://packagist.org/packages/lloydzhou/router)
-[![License](https://poser.pugx.org/lloydzhou/router/license)](https://packagist.org/packages/lloydzhou/router)  
+[![Build Status](https://travis-ci.org/bephp/router.svg?branch=master)](https://travis-ci.org/bephp/router)
+[![Coverage Status](https://coveralls.io/repos/bephp/router/badge.svg?branch=master&service=github)](https://coveralls.io/github/bephp/router?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/bephp/router/v/stable)](https://packagist.org/packages/bephp/router)
+[![Total Downloads](https://poser.pugx.org/bephp/router/downloads)](https://packagist.org/packages/bephp/router)
+[![Latest Unstable Version](https://poser.pugx.org/bephp/router/v/unstable)](https://packagist.org/packages/bephp/router)
+[![License](https://poser.pugx.org/bephp/router/license)](https://packagist.org/packages/bephp/router)  
 *A barebones router for PHP.*  
 *It matches urls and executes PHP functions.*  
 *Automatic get variable based on handler function parameter list.*  
 *Suport to compile router callback handlers into plain array source code.*  
 
-> [中文版](https://github.com/lloydzhou/router/blob/master/README.zh-CN.md).
+> [中文版](https://github.com/bephp/router/blob/master/README.zh-CN.md).
 
 ## Installation
 
@@ -63,10 +63,10 @@ just include the target source code, and execute it with parameters.
 
 ## Performance
 
-1. using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n). ![Tree Node](https://raw.githubusercontent.com/lloydzhou/router/master/node.jpeg)
+1. using tree struct to stored callback handler on leaf node. Ensure that the time complexity of find callback function is O(log n). ![Tree Node](https://raw.githubusercontent.com/bephp/router/master/node.jpeg)
 2. using CRouter class, suport to compile router callback handlers into plain array source code. so can save time to create tree node to store callback by split pathinfo.
 
-### [Benchmark](https://github.com/lloydzhou/php-router-benchmark)
+### [Benchmark](https://github.com/bephp/php-router-benchmark)
 
 using "php-router-benchmark" to test router performance.
 
@@ -92,7 +92,7 @@ Aura v2 - unknown route (1000 routes) | 988 | 0.1798588730 | +0.1798356011 | 772
 
 ## Example
 
-belong is one simple example, see the full examples in [example.php](https://github.com/lloydzhou/router/blob/master/example.php).
+belong is one simple example, see the full examples in [example.php](https://github.com/bephp/router/blob/master/example.php).
 
     (new Router())
     ->error(405, function($message){
@@ -146,6 +146,6 @@ Url match get current result.
 
 ## Demo
 
-there's one [blog demo](https://github.com/lloydzhou/blog), work with [ActiveRecord](https://github.com/lloydzhou/activerecord) and [MicroTpl](https://github.com/lloydzhou/microtpl).
+there's one [blog demo](https://github.com/bephp/blog), work with [ActiveRecord](https://github.com/bephp/activerecord) and [MicroTpl](https://github.com/bephp/microtpl).
 
 
