@@ -14,7 +14,7 @@
 
 ## Installation
 
-    composer require lloydzhou/router
+    composer require bephp/router
 
 ## API Reference
 

@@ -12,7 +12,7 @@
 
 ## 安装
 
-    composer require lloydzhou/router
+    composer require bephp/router
 
 ## API 说明
 
