@@ -54,7 +54,9 @@ class Router {
         return array(false, '', null);
     }
     protected function _split($path){
-        return explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
+        $tokens = explode(self::SEPARATOR, trim($path, self::SEPARATOR));
+        if (($last = array_pop($tokens)) && ($pos = stripos($last, '.'))) $last = array(substr($last, 0, $pos), substr($last, $pos+1));
+        return array_merge($tokens, (array)$last);
     }
     public function resolve($method, $path, $params){
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
