@@ -48,6 +48,24 @@ web程序入口，支持传递3个参数，不过参数是可选的。
 4. before这个钩子函数以及用户在match这个API里面针对这个API自定义的钩子函数会一次按照顺序执行。并且都会接受一个叫做$params的参数，也必须返回这个参数，如果在某一个钩子函数返回false会触发406错误。用户可以在这些钩子函数里面对$params进行更改。  
 5. after这个钩子函数会自动在最后执行，并且会将主逻辑回调函数的返回值作为第一个参数，第二个参数是$router自身。  
 
+## 参数验证
+
+使用[ctype_前缀的系列函数](http://php.net/manual/zh/function.ctype-punct.php)验证pathinfo传递过来的参数
+
+**例如:**
+
+如果定义了路由: "/hello/:name:a.json", 使用RUL: "/hello/lloyd.json"查找路由的时候，会调用"ctype_alpha"来验证"lloyd".  
+
+验证指令和ctype函数的映射表
+
+    A => ctype_alnum
+    a => ctype_alpha
+    d => ctype_digit
+    x => ctype_xdigit
+    l => ctype_lower
+    u => ctype_upper
+
+
 ## 编译
 
 由于PHP程序执行的特殊性，每一次都会从头执行整个代码。所以当用户定义了一大堆的url映射之后，会调用很多次match函数生成路由映射表。  

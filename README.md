@@ -45,6 +45,23 @@ can pass $method and $path when not deploy as web server, can using the 2 parame
 4. the "after" hook will auto trigger with the return value of callback handler.
 5. the "before" hook, and other user define hooks will auto trigger with the merged $params. these hooks need return the $params, so can change the value of $params (like format it). if these hook return false, will trigger 406 error handler.
 
+
+## Validate
+
+using [ctype functions](http://php.net/manual/zh/function.ctype-punct.php) to validate params in pathinfo  
+**example:**
+
+if defined router: "/hello/:name:a.json", and using URL: "/hello/lloyd.json" to resolve url.  
+will call function "ctype_alpha" to validate "lloyd".  
+validate command to map the ctype functions:  
+
+    A => ctype_alnum
+    a => ctype_alpha
+    d => ctype_digit
+    x => ctype_xdigit
+    l => ctype_lower
+    u => ctype_upper
+
 ## Compile
 
 the PHP request always match the callback handlers every time. but the request just match one callback.
