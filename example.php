@@ -60,15 +60,18 @@ class Handler{
 ->post('/hello', array(new Handler, 'hello'), 'auth')
 ->get('/hello/:name', array(new Handler(), 'hello'))
 ->get('/hello/:name/again', array('Handler', 'hello_again'), 'auth')
-->get('/hello/:name.:ext', function($name, $ext){
+->get('/hello/:name:a.:ext', function($name, $ext){
     if ('js' == $ext || 'json' == $ext) return array('name'=>$name);
     return array('code'=>1, 'msg'=>'error message...');
 }, 'auth')
-->execute();
+->execute(array(), php_sapi_name() == 'cli' ? 'GET' : null, php_sapi_name() == 'cli' ?  '/hello/lloyd.json': null);
 
 /**
  * curl -vvv 127.0.0.1:8888/hello/
  * will trigger 405 error handler, should redirect to URL: "/hello/world"
+ *
+ * curl -vvv -XPOST -d "name=lloyd" 127.0.0.1:8888/hello
+ * will get 200 status code, and get body "Hello lloyd !!!"
  *
  * curl -vvv 127.0.0.1:8888/hello/lloyd 
  * will get 200 status code, and get body "Hello lloyd !!!"

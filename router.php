@@ -8,6 +8,7 @@ class Router {
     protected $_tree = array();
     protected $_error = array();
     protected $_hook = array();
+    protected $_ctypes = array('A' => 'alnum', 'a' => 'alpha', 'd' => 'digit', 'x' => 'xdigit', 'l' => 'lower', 'u' => 'upper');
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
@@ -39,11 +40,20 @@ class Router {
             return $this->_resolve($node[$current_token], $tokens, $params);
         foreach($node[self::COLON] as $child_token=>$child_node){
             /**
+             * if defined ctype validate function, for the current params, call the ctype function to validate $current_token
+             * example: "/hello/:name:a.json", and url "/hello/lloyd.json" will call "ctype_alpha" to validate "lloyd"
+             */
+            if ($pos = stripos($child_token, self::COLON)){
+                if (($m=substr($child_token, $pos+1)) && isset($this->_ctypes[$m]) && !call_user_func('ctype_'.$this->_ctypes[$m], $current_token))
+                    continue;
+                $child_token = substr($child_token, 0, $pos);
+            }
+            /**
              * if $current_token not null, and $child_token start with ":"
              * set the parameter named $pname and resolve next $path.
              * if can not resolve with next $path, restore the parameter named $pname.
              */
-            $pvalue = array_key_exists($child_token, $params) ? $params[$child_node] : null;
+            $pvalue = array_key_exists($child_token, $params) ? $params[$child_token] : null;
             $params[$child_token] = $current_token;
             if (!$current_token && array_key_exists(self::LEAF, $child_node))
                 return array($child_node[self::LEAF][0], $child_node[self::LEAF][1], $params);
