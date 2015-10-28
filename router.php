@@ -63,19 +63,15 @@ class Router {
         }
         return array(false, '', null);
     }
-    protected function _split($path){
-        $tokens = explode(self::SEPARATOR, trim($path, self::SEPARATOR));
-        if (($last = array_pop($tokens)) && ($pos = stripos($last, '.'))) $last = array(substr($last, 0, $pos), substr($last, $pos+1));
-        return array_merge($tokens, (array)$last);
-    }
     public function resolve($method, $path, $params){
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
-        return $this->_resolve($this->_tree[$method], $this->_split($path), $params);
+        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
+        return $this->_resolve($this->_tree[$method], $tokens, $params);
     }
     /* API to find handler and execute it by parameters. */
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
-        $path = $path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $path = trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
         list($cb, $hook, $params) = $this->resolve($method, $path, $params);
         if (!is_callable($cb)) return $this->error(405, "Could not resolve [$method] $path");
         /**
@@ -106,7 +102,8 @@ class Router {
     }
     public function match($method, $path, $cb, $hook=null){
         if (!array_key_exists($method, $this->_tree)) $this->_tree[$method] = array();
-        $this->match_one_path($this->_tree[$method], $this->_split($path), $cb, $hook);
+        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
+        $this->match_one_path($this->_tree[$method], $tokens, $cb, $hook);
         return $this;
     }
     /* register api based on request method. also register "error" and "hook" API. */
