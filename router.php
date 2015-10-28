@@ -32,12 +32,13 @@ class Router {
         $node[self::LEAF] = array($cb, (array)($hook));
     }
     /* helper function to find handler by $path. */
-    protected function _resolve($node, $tokens, $params){
-        $current_token = array_shift($tokens);
+    protected function _resolve($node, $tokens, $params, $depth=0){
+        if ($depth == 0 && !$tokens[0]) return $this->_resolve($node, $tokens, $params, $depth+1);
+        $current_token = isset($tokens[$depth])?$tokens[$depth]:'';
         if (!$current_token && array_key_exists(self::LEAF, $node))
             return array($node[self::LEAF][0], $node[self::LEAF][1], $params);
         if (array_key_exists($current_token, $node))
-            return $this->_resolve($node[$current_token], $tokens, $params);
+            return $this->_resolve($node[$current_token], $tokens, $params, $depth+1);
         foreach($node[self::COLON] as $child_token=>$child_node){
             /**
              * if defined ctype validate function, for the current params, call the ctype function to validate $current_token
@@ -57,7 +58,7 @@ class Router {
             $params[$child_token] = $current_token;
             if (!$current_token && array_key_exists(self::LEAF, $child_node))
                 return array($child_node[self::LEAF][0], $child_node[self::LEAF][1], $params);
-            list($cb, $hook, $params) = $this->_resolve($child_node, $tokens, $params);
+            list($cb, $hook, $params) = $this->_resolve($child_node, $tokens, $params, $depth+1);
             if ($cb) return array($cb, $hook, $params);
             $params[$child_token] = $pvalue;
         }
@@ -65,7 +66,8 @@ class Router {
     }
     public function resolve($method, $path, $params){
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
-        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
+        //$tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
+        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
         return $this->_resolve($this->_tree[$method], $tokens, $params);
     }
     /* API to find handler and execute it by parameters. */
