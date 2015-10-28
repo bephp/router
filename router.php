@@ -65,13 +65,13 @@ class Router {
     }
     public function resolve($method, $path, $params){
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
-        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
+        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
         return $this->_resolve($this->_tree[$method], $tokens, $params);
     }
     /* API to find handler and execute it by parameters. */
     public function execute($params=array(), $method=null, $path=null){
         $method = $method ? $method : $_SERVER['REQUEST_METHOD'];
-        $path = trim($path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), self::SEPARATOR);
+        $path = $path ? $path : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         list($cb, $hook, $params) = $this->resolve($method, $path, $params);
         if (!is_callable($cb)) return $this->error(405, "Could not resolve [$method] $path");
         /**
