@@ -103,9 +103,11 @@ class Router {
         return $this->hook('after', call_user_func_array($cb, $args), $this);
     }
     public function match($method, $path, $cb, $hook=null){
-        if (!array_key_exists($method, $this->_tree)) $this->_tree[$method] = array();
         $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
-        $this->match_one_path($this->_tree[$method], $tokens, $cb, $hook);
+        foreach((array)($method) as $m){
+            if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
+            $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
+        }
         return $this;
     }
     /* register api based on request method. also register "error" and "hook" API. */
