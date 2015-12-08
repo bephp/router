@@ -108,13 +108,18 @@ class Router {
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
             $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
         }
-        return $this;
     }
     /* register api based on request method. also register "error" and "hook" API. */
     public function __call($name, $args){
         if (in_array($name, array('get', 'post', 'put', 'patch', 'delete', 'trace', 'connect', 'options', 'head'))){
             array_unshift($args, strtoupper($name));
-            return call_user_func_array(array($this, 'match'), $args);
+            if (is_array($args[1])) {
+                foreach ($args[1] as $path) {
+                    call_user_func_array(array($this, 'match'), [strtoupper($name), $path, $args[2], isset($args[3]) ? $args[3] : null]);
+                }
+            } else {
+                call_user_func_array(array($this, 'match'), $args);
+            }
         }
         if (in_array($name, array('error', 'hook'))){
             $key = array_shift($args);
@@ -123,8 +128,8 @@ class Router {
             else if (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
                 return call_user_func_array($this->{$_name}[$key], $args);
             else return ('error' == $name) ? trigger_error('"'.$key.'" not defined to handler error: '.$args[0]) : $args[0];
-            return $this;
         }
+        return $this;
     }
 }
 
