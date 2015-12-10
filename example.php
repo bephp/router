@@ -57,6 +57,9 @@ class Handler{
 ->get('/', function(){
     echo "Hello world !!!";
 })
+->match(array('get', 'post'), array('/index.html', '/index.php'), function(){
+    echo "Good Lucky!";
+})
 ->post('/hello', array(new Handler, 'hello'), 'auth')
 ->get('/hello/:name', array(new Handler(), 'hello'))
 ->get('/hello/:name/again', array('Handler', 'hello_again'), 'auth')
@@ -64,11 +67,17 @@ class Handler{
     if ('js' == $ext || 'json' == $ext) return array('name'=>$name);
     return array('code'=>1, 'msg'=>'error message...');
 }, 'auth')
-->execute(array(), php_sapi_name() == 'cli' ? 'GET' : null, php_sapi_name() == 'cli' ?  '/hello/lloyd.json': null);
+->execute(array(), php_sapi_name() == 'cli' ? 'GET' : null, php_sapi_name() == 'cli' ?  '/sssssss': null);
 
 /**
  * curl -vvv 127.0.0.1:8888/hello/
  * will trigger 405 error handler, should redirect to URL: "/hello/world"
+ *
+ * curl -vvv 127.0.0.1:8888/index.php
+ * will get 200 status code, and get body "Good Lucky!"
+ *
+ * curl -vvv -XPOST 127.0.0.1:8888/index.html
+ * will get 200 status code, and get body "Good Lucky!"
  *
  * curl -vvv -XPOST -d "name=lloyd" 127.0.0.1:8888/hello
  * will get 200 status code, and get body "Hello lloyd !!!"
