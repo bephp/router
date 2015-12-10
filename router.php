@@ -103,10 +103,13 @@ class Router {
         return $this->hook('after', call_user_func_array($cb, $args), $this);
     }
     public function match($method, $path, $cb, $hook=null){
-        $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
         foreach((array)($method) as $m){
+            $m = strtoupper($m);
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
-            $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
+            foreach((array)($path) as $p){
+                $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($p, self::SEPARATOR)));
+                $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
+            }
         }
         return $this;
     }

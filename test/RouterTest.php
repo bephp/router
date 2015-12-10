@@ -32,6 +32,21 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
         $response = $r->execute(array(), 'POST', '/foo');
         $this->assertEquals('bar',$response);
     }
+    public function testMulPathDispatched(){
+        $r = $this->router();
+        $r->match(array('GET', 'POST'), array('/foo', '/bar'), function(){ return 'foo bar'; });
+        $response = $r->execute(array(), 'GET', '/foo');
+        $this->assertEquals('foo bar',$response);
+        $response = $r->execute(array(), 'POST', '/bar');
+        $this->assertEquals('foo bar',$response);
+    
+        $r = $this->router(true);
+        $r->match(array('GET', 'POST'), array('/foo', '/bar'), function(){ return 'foo bar'; });
+        $response = $r->execute(array(), 'GET', '/foo');
+        $this->assertEquals('foo bar',$response);
+        $response = $r->execute(array(), 'POST', '/bar');
+        $this->assertEquals('foo bar',$response);
+    }
     public function testStringDispatched(){
         $r = $this->router();
         $r->get('/foo', function(){ return 'bar'; });
