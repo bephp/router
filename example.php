@@ -67,7 +67,7 @@ class Handler{
     if ('js' == $ext || 'json' == $ext) return array('name'=>$name);
     return array('code'=>1, 'msg'=>'error message...');
 }, 'auth')
-->execute(array(), php_sapi_name() == 'cli' ? 'GET' : null, php_sapi_name() == 'cli' ?  '/sssssss': null);
+->execute(array(), php_sapi_name() == 'cli' ? 'GET' : null, php_sapi_name() == 'cli' ?  '/hello/lloyd.json': null);
 
 /**
  * curl -vvv 127.0.0.1:8888/hello/
