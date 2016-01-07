@@ -6,16 +6,14 @@
  */
 class Router {
     protected $_tree = array();
-    protected $_error = array();
-    protected $_hook = array();
+    protected $_events = array();
     protected $_ctypes = array('A' => 'alnum', 'a' => 'alpha', 'd' => 'digit', 'x' => 'xdigit', 'l' => 'lower', 'u' => 'upper');
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
-    public function __construct($tree=array(), $error=array(), $hook=array()){
+    public function __construct($tree=array(), $events=array()){
         $this->_tree = $tree;
-        $this->_error = $error;
-        $this->_hook = $hook;
+        $this->_events = $events;
     }
     /* helper function to create the tree based on urls, handlers will stored to leaf. */
     protected function match_one_path(&$node, $tokens, $cb, $hook){
@@ -120,11 +118,11 @@ class Router {
             return call_user_func_array(array($this, 'match'), $args);
         }
         if (in_array($name, array('error', 'hook'))){
-            $key = array_shift($args);
-            if (($_name = '_'. $name) && isset($args[0]) && is_callable($args[0]))
-                $this->{$_name}[$key] = $args[0];
-            else if (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
-                return call_user_func_array($this->{$_name}[$key], $args);
+            $key = $name. ':'. array_shift($args);
+            if (isset($args[0]) && is_callable($args[0]))
+                $this->_events[$key] = $args[0];
+            else if (isset($this->_events[$key]) && is_callable($this->_events[$key]))
+                return call_user_func_array($this->_events[$key], $args);
             else return ('error' == $name) ? trigger_error('"'.$key.'" not defined to handler error: '.$args[0]) : $args[0];
             return $this;
         }
