@@ -5,6 +5,7 @@
  * automatic get variable based on handler function parameter list.
  */
 class Router {
+    protected $prefix = '';
     protected $_tree = array();
     protected $_error = array();
     protected $_hook = array();
@@ -107,7 +108,7 @@ class Router {
             $m = strtoupper($m);
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
             foreach((array)($path) as $p){
-                $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($p, self::SEPARATOR)));
+                $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($this->prefix.$p, self::SEPARATOR)));
                 $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
             }
         }
@@ -119,6 +120,8 @@ class Router {
             array_unshift($args, strtoupper($name));
             return call_user_func_array(array($this, 'match'), $args);
         }
+        if (in_array($name, array('group', 'prefix')))
+            $this->prefix = is_string($args[0]) && self::SEPARATOR == $args[0][0] ? $args[0] : '';
         if (in_array($name, array('error', 'hook'))){
             $key = array_shift($args);
             if (($_name = '_'. $name) && isset($args[0]) && is_callable($args[0]))
@@ -126,8 +129,8 @@ class Router {
             else if (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
                 return call_user_func_array($this->{$_name}[$key], $args);
             else return ('error' == $name) ? trigger_error('"'.$key.'" not defined to handler error: '.$args[0]) : $args[0];
-            return $this;
         }
+        return $this;
     }
 }
 
