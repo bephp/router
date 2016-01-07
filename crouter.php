@@ -57,8 +57,7 @@ class CRouter extends Router {
         if ($this->needCompile()){
             $code = "<?php\nreturn new Router("
                 . $this->export($this->_tree, true). ', '
-                . $this->export($this->_error, true). ', '
-                . $this->export($this->_hook, true). ');';
+                . $this->export($this->_events, true). ');';
             file_put_contents($this->target, $code);
         }
         $router = include ($this->target);
