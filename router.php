@@ -121,7 +121,7 @@ class Router {
             return call_user_func_array(array($this, 'match'), $args);
         }
         if (in_array($name, array('group', 'prefix')))
-            $this->prefix = is_string($args[0]) && self::SEPARATOR == $args[0][0] ? $args[0] : '';
+            $this->prefix = isset($args[0]) && is_string($args[0]) && self::SEPARATOR == $args[0][0] ? $args[0] : '';
         if (in_array($name, array('error', 'hook'))){
             $key = array_shift($args);
             if (($_name = '_'. $name) && isset($args[0]) && is_callable($args[0]))
