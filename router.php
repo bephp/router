@@ -9,6 +9,7 @@ class Router {
     protected $_error = array();
     protected $_hook = array();
     protected $_ctypes = array('A' => 'alnum', 'a' => 'alpha', 'd' => 'digit', 'x' => 'xdigit', 'l' => 'lower', 'u' => 'upper');
+    protected $prefix = '';
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
@@ -107,7 +108,7 @@ class Router {
             $m = strtoupper($m);
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
             foreach((array)($path) as $p){
-                $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($p, self::SEPARATOR)));
+                $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($this->prefix.$p, self::SEPARATOR)));
                 $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
             }
         }
@@ -126,6 +127,12 @@ class Router {
             else if (isset($this->{$_name}[$key]) && is_callable($this->{$_name}[$key]))
                 return call_user_func_array($this->{$_name}[$key], $args);
             else return ('error' == $name) ? trigger_error('"'.$key.'" not defined to handler error: '.$args[0]) : $args[0];
+            return $this;
+        }
+        if (in_array($name, array('group', 'prefix')) && is_string($args[0]) && is_callable($args[1])) {
+            $this->prefix = $args[0];
+            call_user_func($args[1], $this);
+            $this->prefix = '';
             return $this;
         }
     }

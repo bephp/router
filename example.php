@@ -60,6 +60,14 @@ class Handler{
 ->match(array('get', 'post'), array('/index.html', '/index.php'), function(){
     echo "Good Lucky!";
 })
+->group('/router', function($router){
+    $router->get('/:name', array(new Handler(), 'Hello'));
+    $router->get('/:name/again', array('Handler', 'hello_again'), 'auth');
+})
+->group('/user', function($router){
+    $router->get('/:name', array(new Handler(), 'Hello'));
+    $router->get('/:name/again', array('Handler', 'hello_again'), 'auth');
+})
 ->post('/hello', array(new Handler, 'hello'), 'auth')
 ->get('/hello/:name', array(new Handler(), 'hello'))
 ->get('/hello/:name/again', array('Handler', 'hello_again'), 'auth')
@@ -88,10 +96,22 @@ class Handler{
  * curl -vvv 127.0.0.1:8888/hello/lloyd/again 
  * will get 200 status code, and get body "Hello lloyd again !!!"
  *
- * curl -vvv 127.0.0.1:8888/hello/world/again 
+ * curl -vvv 127.0.0.1:8888/router/lloyd/again
+ * will get 200 status code, and get body "Hello lloyd again !!!"
+ *
+ * curl -vvv 127.0.0.1:8888/router/lloyd
+ * will get 200 status code, and get body "Hello lloyd !!!"
+ *
+ * curl -vvv 127.0.0.1:8888/user/lloyd/again
+ * will get 200 status code, and get body "Hello lloyd again !!!"
+ *
+ * curl -vvv 127.0.0.1:8888/user/lloyd
+ * will get 200 status code, and get body "Hello lloyd !!!"
+ *
+ * curl -vvv 127.0.0.1:8888/hello/world/again
  * will trigger 406 error handler, should redirect to URL: "/login"
  *
- * curl -vvv 127.0.0.1:8888/hello/lloyd.json 
+ * curl -vvv 127.0.0.1:8888/hello/lloyd.json
  * will get 200 status code, and get body: {"name": "lloyd"}
  *
  * curl -vvv 127.0.0.1:8888/hello/lloyd.js?jsoncallback=test

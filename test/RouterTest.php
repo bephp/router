@@ -69,6 +69,35 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
         $response = $r->execute(array(), 'GET', '/hello/lloyd');
         $this->assertEquals('lloyd',$response);
     }
+    public function testGroupDispatched(){
+        $r = $this->router();
+        $r->prefix('/user', function($router){
+            $router->get('/:name', function($name){ return $name; });
+        });
+        $response = $r->execute(array(), 'GET', '/user/lloyd');
+        $this->assertEquals('lloyd',$response);
+
+        $r = $this->router(true);
+        $r->prefix('/user', function($router){
+            $router->get('/:name', function($name){ return $name; });
+        });
+        $response = $r->execute(array(), 'GET', '/user/lloyd');
+        $this->assertEquals('lloyd',$response);
+
+        $r = $this->router();
+        $r->group('/user', function($router){
+            $router->get('/:name', function($name){ return $name; });
+        });
+        $response = $r->execute(array(), 'GET', '/user/lloyd');
+        $this->assertEquals('lloyd',$response);
+
+        $r = $this->router(true);
+        $r->group('/user', function($router){
+            $router->get('/:name', function($name){ return $name; });
+        });
+        $response = $r->execute(array(), 'GET', '/user/lloyd');
+        $this->assertEquals('lloyd',$response);
+    }
     public function testParamsDispatched(){
         $r = $this->router();
         $r->get('/hello/:name1/:name2', function($name1, $name2){ return $name1. $name2; });
