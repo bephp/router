@@ -18,7 +18,7 @@
 
 ## API Reference
 
-### group($prefix)
+### group/prefix($prefix)
 
 add group routers with same prefix. if not pass param $prefix just reset attribute prefix of router instance to empty string.
 
@@ -26,7 +26,7 @@ add group routers with same prefix. if not pass param $prefix just reset attribu
 
 create the router tree based on given $method and $path, the $callback and $hook will stored in the leaf node.
 
-### get($path, $callback, $hook)
+### get/post/put/delete/head/options($path, $callback, $hook)
 
 wraper the match method without $method parameter. also defined "post", "put", "delete", "head" and so on.
 

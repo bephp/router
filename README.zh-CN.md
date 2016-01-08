@@ -16,7 +16,7 @@
 
 ## API 说明
 
-### group($prefix)
+### group/prefix($prefix)
 
 创建一组拥有相同URL前缀的路由。不传递参数，或者传递参数错误的时候，会将prefix设置成空字符串。
 
@@ -24,7 +24,7 @@
 
 依据传递的HTTP请求方法以及url路径生成路由映射树形结构体，在叶子节点保存回调函数和需要处理的钩子函数
 
-### get($path, $callback, $hook)
+### get/post/put/delete/head/options($path, $callback, $hook)
 
 get函数是对match函数的封装，直接使用'GET'作为第一个参数调用match方法。
 同样的，也对post，put，delete，head，options等请求进行了封装。
