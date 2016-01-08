@@ -61,8 +61,12 @@ class Handler{
     echo "Good Lucky!";
 })
 ->post('/hello', array(new Handler, 'hello'), 'auth')
-->get('/hello/:name', array(new Handler(), 'hello'))
-->get('/hello/:name/again', array('Handler', 'hello_again'), 'auth')
+// using group API to set prefix of the pathinfo
+->group('/hello')
+    ->get('/:name', array(new Handler(), 'hello'))
+    ->get('/:name/again', array('Handler', 'hello_again'), 'auth')
+// reset the prefix, or you can just set to another prefix
+->group()
 ->get('/hello/:name:a.:ext', function($name, $ext){
     if ('js' == $ext || 'json' == $ext) return array('name'=>$name);
     return array('code'=>1, 'msg'=>'error message...');
