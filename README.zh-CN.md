@@ -16,6 +16,10 @@
 
 ## API 说明
 
+### group($prefix)
+
+创建一组拥有相同URL前缀的路由。不传递参数，或者传递参数错误的时候，会将prefix设置成空字符串。
+
 ### match($method, $path, $callback, $hook)
 
 依据传递的HTTP请求方法以及url路径生成路由映射树形结构体，在叶子节点保存回调函数和需要处理的钩子函数
