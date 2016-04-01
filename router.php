@@ -115,7 +115,7 @@ class Router {
     /* register api based on request method. also register "error" and "hook" API. */
     public function __call($name, $args){
         if (in_array($name, array('get', 'post', 'put', 'patch', 'delete', 'trace', 'connect', 'options', 'head'))){
-            array_unshift($args, strtoupper($name));
+            array_unshift($args, $name);
             return call_user_func_array(array($this, 'match'), $args);
         }
         if (in_array($name, array('group', 'prefix')))
