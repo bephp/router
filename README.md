@@ -18,9 +18,10 @@
 
 ## API Reference
 
-### group/prefix($prefix)
+### group/prefix($prefix, $hook)
 
 add group routers with same prefix. if not pass param $prefix just reset attribute prefix of router instance to empty string.
+will merge the $hook to this group.
 
 ### match($method, $path, $callback, $hook)
 
