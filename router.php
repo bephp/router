@@ -6,6 +6,7 @@
  */
 class Router {
     protected $prefix = '';
+    public $prefix_hook = array();
     protected $_tree = array();
     protected $_events = array();
     protected $_ctypes = array('A' => 'alnum', 'a' => 'alpha', 'd' => 'digit', 'x' => 'xdigit', 'l' => 'lower', 'u' => 'upper');
@@ -28,7 +29,7 @@ class Router {
             $node[$real_token] = array();
         if ($real_token)
             return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
-        $node[self::LEAF] = array($cb, (array)($hook));
+        $node[self::LEAF] = array($cb, $hook);
     }
     /* helper function to find handler by $path. */
     protected function _resolve($node, $tokens, $params, $depth=0){
@@ -107,7 +108,7 @@ class Router {
             if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
             foreach((array)($path) as $p){
                 $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($this->prefix.$p, self::SEPARATOR)));
-                $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
+                $this->match_one_path($this->_tree[$m], $tokens, $cb, array_merge($this->prefix_hook, (array)$hook));
             }
         }
         return $this;
@@ -118,8 +119,10 @@ class Router {
             array_unshift($args, $name);
             return call_user_func_array(array($this, 'match'), $args);
         }
-        if (in_array($name, array('group', 'prefix')))
+        if (in_array($name, array('group', 'prefix'))){
             $this->prefix = isset($args[0]) && is_string($args[0]) && self::SEPARATOR == $args[0][0] ? $args[0] : '';
+            $this->prefix_hook = isset($args[1]) ? (array)$args[1] : array();
+        }
         if (in_array($name, array('error', 'hook'))){
             $key = $name. ':'. array_shift($args);
             if (isset($args[0]) && is_callable($args[0]))
