@@ -149,9 +149,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
     // test hooks
     public function testBeforeHook(){
         $r = $this->router(); 
-        $r->hook('before', function($params){
-            $params['ext'] = 'json';
-            return $params;
+        $r->hook('before', function($router){
+            $router->params['ext'] = 'json';
         });
         $r->get('/hello/:name', function($name, $ext){ return $name. '.'. $ext; });
         $response = $r->execute(array('ext'=>'js'), 'GET', '/hello/lloyd');
@@ -159,12 +158,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
     }
     public function testCustomerHookGroup(){
         $r = $this->router();
-        $r->hook('add', function($params){
-            $params['result'] = $params['arg1'] + $params['arg2'];
-            return $params;
-        })->hook('del', function($params){
-            $params['result'] = $params['arg1'] - $params['arg2'];
-            return $params;
+        $r->hook('add', function($router){
+            $router->params['result'] = $router->params['arg1'] + $router->params['arg2'];
+        })->hook('del', function($router){
+            $router->params['result'] = $router->params['arg1'] - $router->params['arg2'];
         });
         // test group width hook
         $r->group('/add', 'add')->get('/:arg1:d/:arg2:d', function($arg1, $arg2, $result){ return $result; });

@@ -6,7 +6,7 @@
  */
 class Router {
     protected $prefix = '';
-    public $prefix_hook = array();
+    protected $prefix_hook = array();
     protected $_tree = array();
     protected $_events = array();
     protected $_ctypes = array('A' => 'alnum', 'a' => 'alpha', 'd' => 'digit', 'x' => 'xdigit', 'l' => 'lower', 'u' => 'upper');
@@ -82,9 +82,9 @@ class Router {
         $input = ((isset($_SERVER['HTTP_CONTENT_TYPE']) && 'application/json' == $_SERVER['HTTP_CONTENT_TYPE'])
             || (isset($_SERVER['CONTENT_TYPE']) && 'application/json' == $_SERVER['CONTENT_TYPE']))
             ? (array)json_decode(file_get_contents('php://input'), true) : array();
-        $params = array_merge($params, $_SERVER, $_REQUEST, $input, $_FILES, $_COOKIE, isset($_SESSION)?$_SESSION:array(), array('router'=>$this));
+        $this->params = array_merge($params, $_SERVER, $_REQUEST, $input, $_FILES, $_COOKIE, isset($_SESSION)?$_SESSION:array(), array('router'=>$this));
         foreach(array_merge(array('before'), $hook) as $i=>$h){
-            if (!($params = $this->hook($h, $params))) return $this->error(406, "Failed to execute hook: $h");
+            if (false === $this->hook($h, $this)) return $this->error(406, "Failed to execute hook: $h");
         }
         /**
          * auto get the variable list based on the callback handler parameter list.
@@ -95,7 +95,7 @@ class Router {
         $args = $ref->getParameters();
         array_walk($args, function(&$p, $i, $params){
             $p = isset($params[$p->getName()]) ? $params[$p->getName()] : ($p->isOptional() ? $p->getDefaultValue() : null);
-        }, $params);
+        }, $this->params);
         /* execute the callback handler and pass the result into "after" hook handler.*/
         return $this->hook('after', call_user_func_array($cb, $args), $this);
     }

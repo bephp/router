@@ -37,10 +37,10 @@ class Handler{
 ->error(406, function($message){
     die($message);
 })
-->hook('auth', function($params){
-    if ('lloyd' == $params['name'])
-        return $params;
-    $params['router']->error(401, 'Forbiden');
+->hook('auth', function($router){
+    if ('lloyd' == $router->params['name'])
+        return true;
+    $router->error(401, 'Forbiden');
 })
 ->hook('after', function($result, $router){
     if ($result) {
@@ -50,9 +50,9 @@ class Handler{
         else print json_encode($result);
     }
 })
-->hook('before', function($params){
+->hook('before', function($router){
     //$params['name'] = 'lloydzhou';
-    return $params;
+    return true;
 })
 ->get('/', function(){
     echo "Hello world !!!";
