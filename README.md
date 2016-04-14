@@ -48,7 +48,7 @@ can pass $method and $path when not deploy as web server, can using the 2 parame
 2. if call this API with $hook_name and other parameters, will trigger the hook handler, the parameters will passed to the hook handler.
 3. there's 2 spec hook: "before" and "after", this library will auto call "before" hook before execute the handler, and call "after" hook after execute the handler.
 4. the "after" hook will auto trigger with the return value of callback handler.
-5. the "before" hook, and other user define hooks will auto trigger with the merged $params. these hooks need return the $params, so can change the value of $params (like format it). if these hook return false, will trigger 406 error handler.
+5. the "before" hook, and other user define hooks will auto trigger with the current router object $router, and the merged params stored in $router->params. if these hook return false, will trigger 406 error handler.
 
 
 ## Validate
