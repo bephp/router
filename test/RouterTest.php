@@ -157,6 +157,23 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
         $response = $r->execute(array('ext'=>'js'), 'GET', '/hello/lloyd');
         $this->assertEquals('lloyd.json',$response);
     }
+    public function testCustomerHookGroup(){
+        $r = $this->router();
+        $r->hook('add', function($params){
+            $params['result'] = $params['arg1'] + $params['arg2'];
+            return $params;
+        })->hook('del', function($params){
+            $params['result'] = $params['arg1'] - $params['arg2'];
+            return $params;
+        });
+        // test group width hook
+        $r->group('/add', 'add')->get('/:arg1:d/:arg2:d', function($arg1, $arg2, $result){ return $result; });
+        $r->prefix('/del', 'del')->get('/:arg1:d/:arg2:d', function($arg1, $arg2, $result){ return $result; });
+        $response = $r->execute(array(), 'GET', '/add/1/2');
+        $this->assertEquals('3',$response);
+        $response = $r->execute(array(), 'GET', '/del/3/1');
+        $this->assertEquals('2',$response);
+    }
     public function testCustomerHookHandleErrorOutside(){
         $r = $this->router(); 
         $r->hook('auth', function($params){

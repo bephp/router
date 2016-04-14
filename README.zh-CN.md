@@ -16,9 +16,10 @@
 
 ## API 说明
 
-### group/prefix($prefix)
+### group/prefix($prefix, $hook)
 
 创建一组拥有相同URL前缀的路由。不传递参数，或者传递参数错误的时候，会将prefix设置成空字符串。
+可以在定义group的时候，同时给这一组url定义相同的hook，会在调用match的时候合并到每一个url对应的hook里面，默认是空数组。
 
 ### match($method, $path, $callback, $hook)
 
