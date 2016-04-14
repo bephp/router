@@ -19,20 +19,18 @@ class Router {
     /* helper function to create the tree based on urls, handlers will stored to leaf. */
     protected function match_one_path(&$node, $tokens, $cb, $hook){
         $token = array_shift($tokens);
-        if (!array_key_exists(self::COLON, $node))
-            $node[self::COLON] = array();
         $is_token = ($token && self::COLON == $token[0]);
         $real_token = $is_token ? substr($token, 1) : $token;
         if ($is_token) $node = &$node[self::COLON];
         if ($real_token && !array_key_exists($real_token, $node))
-            $node[$real_token] = array();
+            $node[$real_token] = array(self::COLON => array());
         if ($real_token)
             return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
-        $node[self::LEAF] = array($cb, (array)($hook));
+        $node = array(self::LEAF => array($cb, (array)($hook)), self::COLON => array());
     }
     /* helper function to find handler by $path. */
     protected function _resolve($node, $tokens, $params, $depth=0){
-        if ($depth == 0 && !$tokens[0]) return $this->_resolve($node, $tokens, $params, $depth+1);
+        $depth = ($depth == 0 && !$tokens[0]) ? 1 : $depth;
         $current_token = isset($tokens[$depth])?$tokens[$depth]:'';
         if (!$current_token && array_key_exists(self::LEAF, $node))
             return array($node[self::LEAF][0], $node[self::LEAF][1], $params);
@@ -65,7 +63,6 @@ class Router {
     }
     public function resolve($method, $path, $params){
         if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
-        //$tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($path, self::SEPARATOR)));
         $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
         return $this->_resolve($this->_tree[$method], $tokens, $params);
     }
@@ -104,7 +101,7 @@ class Router {
     public function match($method, $path, $cb, $hook=null){
         foreach((array)($method) as $m){
             $m = strtoupper($m);
-            if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array();
+            if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array(self::COLON => array());
             foreach((array)($path) as $p){
                 $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($this->prefix.$p, self::SEPARATOR)));
                 $this->match_one_path($this->_tree[$m], $tokens, $cb, $hook);
@@ -114,10 +111,9 @@ class Router {
     }
     /* register api based on request method. also register "error" and "hook" API. */
     public function __call($name, $args){
-        if (in_array($name, array('get', 'post', 'put', 'patch', 'delete', 'trace', 'connect', 'options', 'head'))){
-            array_unshift($args, $name);
+        if (in_array($name, array('get', 'post', 'put', 'patch', 'delete', 'trace', 'connect', 'options', 'head'))
+            && array_unshift($args, $name))
             return call_user_func_array(array($this, 'match'), $args);
-        }
         if (in_array($name, array('group', 'prefix')))
             $this->prefix = isset($args[0]) && is_string($args[0]) && self::SEPARATOR == $args[0][0] ? $args[0] : '';
         if (in_array($name, array('error', 'hook'))){
