@@ -10,6 +10,7 @@ class Router {
     protected $_tree = array();
     protected $_events = array();
     protected $_ctypes = array('A' => 'alnum', 'a' => 'alpha', 'd' => 'digit', 'x' => 'xdigit', 'l' => 'lower', 'u' => 'upper');
+    protected $_default_node = array(self::COLON => array());
     const COLON = ':';
     const SEPARATOR = '/';
     const LEAF = 'LEAF';
@@ -24,7 +25,7 @@ class Router {
         $real_token = $is_token ? substr($token, 1) : $token;
         if ($is_token) $node = &$node[self::COLON];
         if ($real_token && !array_key_exists($real_token, $node))
-            $node[$real_token] = array(self::COLON => array());
+            $node[$real_token] = $this->_default_node;
         if ($real_token)
             return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
         $node = array(self::LEAF => array($cb, (array)($hook)), self::COLON => array());
@@ -63,9 +64,8 @@ class Router {
         return array(false, '', null);
     }
     public function resolve($method, $path, $params){
-        if (!array_key_exists($method, $this->_tree)) return array(null, "Unknown method: $method", null);
         $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, $path));
-        return $this->_resolve($this->_tree[$method], $tokens, $params);
+        return $this->_resolve(array_key_exists($method, $this->_tree) ? $this->_tree[$method] : $this->_default_node, $tokens, $params);
     }
     /* API to find handler and execute it by parameters. */
     public function execute($params=array(), $method=null, $path=null){
@@ -102,7 +102,7 @@ class Router {
     public function match($method, $path, $cb, $hook=null){
         foreach((array)($method) as $m){
             $m = strtoupper($m);
-            if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = array(self::COLON => array());
+            if (!array_key_exists($m, $this->_tree)) $this->_tree[$m] = $this->_default_node;
             foreach((array)($path) as $p){
                 $tokens = explode(self::SEPARATOR, str_replace('.', self::SEPARATOR, trim($this->prefix.$p, self::SEPARATOR)));
                 $this->match_one_path($this->_tree[$m], $tokens, $cb, array_merge($this->prefix_hook, (array)$hook));
