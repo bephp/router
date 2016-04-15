@@ -28,7 +28,7 @@ class Router {
             $node[$real_token] = $this->_default_node;
         if ($real_token)
             return $this->match_one_path($node[$real_token], $tokens, $cb, $hook);
-        $node = array(self::LEAF => array($cb, (array)($hook)), self::COLON => array());
+        $node[self::LEAF] = array($cb, (array)($hook));
     }
     /* helper function to find handler by $path. */
     protected function _resolve($node, $tokens, $params, $depth=0){
