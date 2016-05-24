@@ -1,6 +1,6 @@
 # router 
 [![Build Status](https://travis-ci.org/bephp/router.svg?branch=master)](https://travis-ci.org/bephp/router)
-[![Coverage Status](https://coveralls.io/repos/bephp/router/badge.svg?branch=master&service=github)](https://coveralls.io/github/bephp/router?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/bephp/router/badge.svg?branch=master)](https://coveralls.io/github/bephp/router?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/bephp/router/v/stable)](https://packagist.org/packages/bephp/router)
 [![Total Downloads](https://poser.pugx.org/bephp/router/downloads)](https://packagist.org/packages/bephp/router)
 [![Latest Unstable Version](https://poser.pugx.org/bephp/router/v/unstable)](https://packagist.org/packages/bephp/router)
@@ -29,7 +29,7 @@ create the router tree based on given $method and $path, the $callback and $hook
 
 ### get/post/put/delete/head/options($path, $callback, $hook)
 
-wraper the match method without $method parameter. also defined "post", "put", "delete", "head" and so on.
+wrap the match method without $method parameter. also defined "post", "put", "delete", "head" and so on.
 
 ### execute()
 
