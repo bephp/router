@@ -29,7 +29,7 @@ create the router tree based on given $method and $path, the $callback and $hook
 
 ### get/post/put/delete/head/options($path, $callback, $hook)
 
-wraper the match method without $method parameter. also defined "post", "put", "delete", "head" and so on.
+wrap the match method without $method parameter. also defined "post", "put", "delete", "head" and so on.
 
 ### execute()
 
