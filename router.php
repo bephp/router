@@ -55,8 +55,6 @@ class Router {
              */
             $pvalue = array_key_exists($child_token, $params) ? $params[$child_token] : null;
             $params[$child_token] = $current_token;
-            if (!$current_token && array_key_exists(self::LEAF, $child_node))
-                return array($child_node[self::LEAF][0], $child_node[self::LEAF][1], $params);
             list($cb, $hook, $params) = $this->_resolve($child_node, $tokens, $params, $depth+1);
             if ($cb) return array($cb, $hook, $params);
             $params[$child_token] = $pvalue;
