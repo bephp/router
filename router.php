@@ -122,10 +122,23 @@ class Router {
             if (isset($args[0]) && is_callable($args[0]))
                 $this->_events[$key] = $args[0];
             else if (isset($this->_events[$key]) && is_callable($this->_events[$key]))
-                return call_user_func_array($this->_events[$key], $args);
+                return $this->checkHandlerParameter($this->_events[$key], $args) ? call_user_func_array($this->_events[$key], $args) : trigger_error('"'.$key.'" missing parameter', E_USER_ERROR);
             else return ('error' == $name) ? trigger_error('"'.$key.'" not defined to handler error: '.$args[0]) : $args[0];
         }
         return $this;
+    }
+    protected function checkHandlerParameter($handle,$args)
+    {
+         $reflectionFunc = new ReflectionFunction($handle);
+         $countHandleParameters = count($reflectionFunc->getParameters());
+         if ($countHandleParameters === 0) {
+             return true;
+         }
+         $countParameters = count($args);
+         if ($countParameters < $countHandleParameters) {
+             return false;
+         }
+         return true;
     }
 }
 

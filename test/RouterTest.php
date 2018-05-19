@@ -302,4 +302,17 @@ class RouterTest extends \PHPUnit_Framework_TestCase{
         $this->assertEquals(200, $response->getHttpCode());
         $this->assertEquals('Hello lloyd !!!', $response->getContent());
     }
+
+    public function testErrorMissingParameter(){
+        $r = $this->router();
+        $r->error(405, function($message){
+            return '405';
+        });
+        $router = $this;
+        set_error_handler(function($errno, $errstr) use ($router){
+            $router->assertEquals('"error:405" missing parameter', $errstr);
+        });
+        $r->error(405);
+        restore_error_handler();
+    }
 }
